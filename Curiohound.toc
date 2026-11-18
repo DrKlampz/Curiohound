@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## Category: Collections
 ## X-License: MIT
+## X-Curse-Project-ID: 1815676
 ## IconTexture: Interface\AddOns\Curiohound\Media\Icon
 ## AddonCompartmentFunc: Curiohound_OnAddonCompartmentClick
 ## SavedVariables: CuriohoundDB
