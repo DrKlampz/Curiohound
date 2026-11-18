@@ -1,0 +1,5 @@
+package-as: Curiohound
+
+ignore:
+  - README.md
+  - docs
