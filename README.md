@@ -1,10 +1,25 @@
 # Curiohound
 
-Tracks things worth collecting in WoW Forever and points you at the ones you choose to chase.
+<img src="docs/logo.png" alt="Curiohound icon" width="96" align="right">
 
-Open it with the minimap button or /ch. Alt-click the minimap button for all options.
+**A collector's guide for WoW Forever.** Curiohound keeps a list of everything worth collecting, works out what you have already done, and walks you to the next step.
 
-- Library books (40 spots), the Cozy Sleeping Bag chain, companion pets with a known source, hidden pets and secrets, plus a list of your own.
-- Pin = pursue. Pursued things get a live tracker (step to do now, distance), a progress bar (solid = done, lighter = in hand), and pins on the world map and minimap.
-- Detects books and items in your bags, quest steps from your quest log, pets from your companion list. Everything can also be ticked by hand.
-- Data comes from community guides and may be a little off.
+Open it from the minimap button or `/ch`. Alt-click the minimap button for every option.
+
+## What it tracks
+- **Library books** (about 40 spots), with the librarian rewards and how many books you have turned in.
+- **The Cozy Sleeping Bag** quest chain, step by step, in the right order for your faction.
+- **Early big bags** and bag quests, and **perks** that help while you level.
+- **Companion pets** with a known source, hidden pets and secrets, plus a list of your own.
+
+## What it does
+- **Auto-detects progress.** Books and items in your bags, quest steps from your quest log, quests you finished before installing it, and pets from your companion list. Everything can also be ticked by hand.
+- **Guides you there.** Pin a collectible to track it: an on-screen tracker shows the step to do now, the distance, and travel hints (zeppelins, boats, flight masters). Pins appear on the world map and minimap.
+- **Shows your progress.** Progress bars per category, "X of Y turned in", filters (hide finished, this zone only) and bulk tick buttons.
+- **Look system.** Fonts, colours and textures to make it match the rest of your interface.
+
+## Notes
+- Coordinates come from community guides and are checked against the game's maps with `/ch verify`. A few may still be a little off. Tell me which ones.
+- Library book turn-ins before installing can only be read if the game recorded them as quests; otherwise tick them once by hand.
+
+Made by David for WoW Forever.
