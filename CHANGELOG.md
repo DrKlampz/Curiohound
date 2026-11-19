@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.3.0
+- The minimap button now uses the add-on's own icon instead of a stock game icon.
 - Issue recorder: Ctrl-click the minimap button (or type /issues) to see any errors or blocked actions this add-on logged, with a built-in self-test.
 - A better tooltip on every entry: icon and name, a colored type and status line, class, faction and level, then Where, Quest and item, How to get it (long steps split into short lines), Reward, and library or chain progress.
 - A small spinning 3D model appears beside the tooltip for pets and tames, so you can see what one looks like before you chase it. It works for the Ghost Saber and Broken Tooth now, and for any companion pet once you have owned it. Others say 'not available yet' until their creature ids are added.
