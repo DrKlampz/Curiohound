@@ -698,6 +698,12 @@ function UI.RefreshTracker()
     local L = P.live
     local list = L.list or {}
     if not ns.db.tracker or (#list == 0 and ns.db.trackerHideEmpty) then TR:Hide() return end
+    if WorldMapFrame and not TR.mapHooked then
+        TR.mapHooked = true
+        WorldMapFrame:HookScript("OnShow", function() UI.RefreshTracker() end)
+        WorldMapFrame:HookScript("OnHide", function() UI.RefreshTracker() end)
+    end
+    if ns.db.trackerHideOnMap ~= false and WorldMapFrame and WorldMapFrame:IsShown() then TR:Hide() return end
     TR:Show()
     local nrows = math.min(TMAX, math.max(1, math.floor(ns.db.trackerRows or 5)))
     local y = -26

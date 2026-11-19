@@ -20,6 +20,7 @@ local function Options()
             L.Kon("Show distance in yards", db, "trackerDistance", live),
             L.Kon("Show the progress bars (solid = done, lighter = in hand, like rested XP)", db, "trackerBar", live),
             L.Kon("Hide the tracker while nothing is pursued", db, "trackerHideEmpty", live),
+            L.Kon("Hide the tracker while the world map is open", db, "trackerHideOnMap", live),
             L.Color("Progress bar: finished", db, "barColor", { 0.58, 0.1, 0.62 }, live),
             L.Color("Progress bar: in hand but not handed in", db, "restColor", { 0.1, 0.45, 0.95 }, live),
             L.Note("Click a tracker line to make it the active target. Right-click stops tracking it. The tracker's own look is in the Tracker tab."),

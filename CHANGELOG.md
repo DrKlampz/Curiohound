@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- The tracker is hidden while the world map is open (switch it back on in Options > Tracker).
 - The main window now sits above the tracker, so the tracker no longer draws over the book list.
 
 ## v0.2.2

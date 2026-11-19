@@ -28,6 +28,7 @@ ns.DEFAULTS = {
     trackerBar = true,         -- rested-XP-style progress bar
     trackerDistance = true,
     trackerHideEmpty = true,   -- hide the tracker when nothing is pursued
+    trackerHideOnMap = true,   -- hide the tracker while the world map is open
     trackerPos = nil,
     barColor = { 0.58, 0.1, 0.62 },   -- finished part of the progress bar
     restColor = { 0.1, 0.45, 0.95 }, -- the part you hold but have not turned in yet (like rested XP)
