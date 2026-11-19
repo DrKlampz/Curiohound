@@ -669,9 +669,10 @@ function T.ScanCompanions()
     if not (GetNumCompanions and GetCompanionInfo) then return end
     local n = GetNumCompanions("CRITTER") or 0
     for i = 1, n do
-        local _, name = GetCompanionInfo("CRITTER", i)
+        local cid, name = GetCompanionInfo("CRITTER", i)
         if name then
             local ln = lower(name)
+            if tonumber(cid) and ns.db then ns.db.seenModels = ns.db.seenModels or {} ns.db.seenModels[ln] = tonumber(cid) end
             for pname, list in pairs(petIndex) do
                 if ln == pname or ln:find(pname, 1, true) or pname:find(ln, 1, true) then
                     for _, e in ipairs(list) do T.Raise(e.key, 2, "pet") end

@@ -258,6 +258,84 @@ local function MakeDropdown(label, y, getChoices, onPick)
 end
 
 local CAT_WORD = { book = "Library book", bag = "Cozy Sleeping Bag step", pet = "Companion pet", secret = "Secret or extra", bagq = "Bag or storage", perk = "Gear or perk", custom = "My own list" }
+local CAT_COLOR = { book = "ffd9a441", bag = "ff9fd35c", pet = "ffff9ecb", secret = "ffb48cff", bagq = "ff7fc4ff", perk = "ffffd100", custom = "ffcccccc" }
+local STATE_HEX = { [0] = "ff9a9a9a", [1] = "ffffd100", [2] = "ff55e070" }
+local CLASS_WORD = { HUNTER = "Hunter", ROGUE = "Rogue", WARRIOR = "Warrior", SHAMAN = "Shaman", PALADIN = "Paladin", MAGE = "Mage", WARLOCK = "Warlock", DRUID = "Druid", PRIEST = "Priest" }
+
+-- a small 3D preview that sits beside the tooltip, so you can see what a pet or summon looks like before you chase it
+local PV
+local function Preview()
+    if PV then return PV end
+    PV = CreateFrame("Frame", "CuriohoundPreview", UIParent, "BackdropTemplate")
+    PV:SetSize(190, 230)
+    PV:SetFrameStrata("TOOLTIP")
+    PV:SetClampedToScreen(true)
+    if PV.SetBackdrop then
+        PV:SetBackdrop({ bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 14, insets = { left = 3, right = 3, top = 3, bottom = 3 } })
+        PV:SetBackdropColor(0.04, 0.04, 0.06, 0.95)
+        PV:SetBackdropBorderColor(1, 0.82, 0, 0.9)
+    end
+    PV.title = PV:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    PV.title:SetPoint("TOP", 0, -8)
+    PV.title:SetWidth(170)
+    PV.model = CreateFrame("PlayerModel", nil, PV)
+    PV.model:SetPoint("TOPLEFT", 8, -26)
+    PV.model:SetPoint("BOTTOMRIGHT", -8, 8)
+    PV.spin = 0
+    PV.model:SetScript("OnUpdate", function(self, el)
+        PV.spin = (PV.spin + (el or 0) * 0.6) % 6.2832
+        if self.SetFacing then self:SetFacing(PV.spin) elseif self.SetRotation then self:SetRotation(PV.spin) end
+    end)
+    PV:Hide()
+    return PV
+end
+function UI.HidePreview() if PV then PV:Hide() end end
+
+-- which creature to show: a checked id from the list, or the id the game gave us when you owned that pet
+local function CreatureFor(e)
+    if e.npc then return e.npc end
+    local seen = ns.db and ns.db.seenModels
+    local nm = e.pet or e.name
+    if seen and nm then return seen[string.lower(nm)] end
+    return nil
+end
+
+local function ShowPreview(e)
+    local id = CreatureFor(e)
+    if not id then UI.HidePreview() return false end
+    local pv = Preview()
+    pv.title:SetText(e.name)
+    pv:ClearAllPoints()
+    pv:SetPoint("TOPLEFT", GameTooltip, "TOPRIGHT", 6, 0)
+    local ok = pcall(function()
+        pv.model:ClearModel()
+        pv.model:SetCreature(id)
+    end)
+    if not ok then pv:Hide() return false end
+    pv:Show()
+    return true
+end
+
+-- long notes read better as short lines: split numbered steps, otherwise sentences
+local function NoteLines(text)
+    local out = {}
+    if text:find("%d%) ") then
+        local marked = text:gsub(" ?(%d)%) ", "\n%1) ")
+        for ln in marked:gmatch("[^\n]+") do
+            local trimmed = ln:gsub("^%s+", ""):gsub("%s+$", "")
+            if trimmed ~= "" then out[#out + 1] = trimmed end
+        end
+    else
+        for sent in (text .. " "):gmatch("(.-[%.!?])%s+") do out[#out + 1] = sent end
+    end
+    if #out == 0 then out[1] = text end
+    return out
+end
+
+local function Section(G, label)
+    G:AddLine(" ")
+    G:AddLine(label, 0.5, 0.75, 1)
+end
 
 local function RowTooltip(row)
     local e = row.entry
@@ -265,66 +343,93 @@ local function RowTooltip(row)
     local st = T.State(e.key)
     local G = GameTooltip
     G:SetOwner(row, "ANCHOR_RIGHT")
-    G:SetText(e.name, 1, 0.82, 0)
-    G:AddLine((CAT_WORD[e.cat] or "Collectible") .. "  |  " .. STATE_WORD[st] .. (T.Pursued(e.key) and "  |  tracking" or ""), 0.8, 0.8, 0.8)
+    if G.SetMinimumWidth then G:SetMinimumWidth(280) end
 
-    -- where it is
-    local where = e.zoneName or e.zone
-    if where then
-        local line = where
-        if e.x and e.y then line = line .. ("  (%.1f, %.1f)"):format(e.x, e.y) end
-        G:AddDoubleLine("Where", line, 0.6, 0.8, 1, 1, 1, 1)
-    end
-    if e.place and e.place ~= "" then G:AddLine(e.place, 1, 1, 1, true) end
-
-    -- who can have it
+    -- header: icon, name, then a one-line chip row
+    local icon
+    local it = type(e.item) == "table" and e.item[1] or e.item
+    if it and GetItemInfo then local _, _, _, _, _, _, _, _, _, ic = GetItemInfo(it) icon = ic end
+    G:AddLine((icon and ("|T" .. icon .. ":20|t ") or "") .. "|cffffd100" .. e.name .. "|r", 1, 1, 1, true)
+    local chips = "|c" .. (CAT_COLOR[e.cat] or "ffcccccc") .. (CAT_WORD[e.cat] or "Collectible") .. "|r   |c" .. STATE_HEX[st] .. STATE_WORD[st] .. "|r"
+    if T.Pursued(e.key) then chips = chips .. "   |cff66ddfftracking|r" end
+    G:AddLine(chips)
     local need = {}
+    if e.class then need[#need + 1] = "|cffffffff" .. (CLASS_WORD[e.class] or e.class) .. " only|r" end
+    if e.fac == "A" then need[#need + 1] = "|cff4a9dffAlliance|r" elseif e.fac == "H" then need[#need + 1] = "|cffff5050Horde|r" end
     if e.lvl and e.lvl > 1 then need[#need + 1] = "level " .. e.lvl end
-    if e.fac == "A" then need[#need + 1] = "Alliance only" elseif e.fac == "H" then need[#need + 1] = "Horde only" end
-    if e.class then need[#need + 1] = tostring(e.class) end
-    if #need > 0 then G:AddDoubleLine("Needs", table.concat(need, ", "), 0.6, 0.8, 1, 1, 1, 1) end
+    if #need > 0 then G:AddLine(table.concat(need, "  |cff888888-|r  ")) end
 
-    -- the quest and the item behind it
-    if e.quest then
-        local q = type(e.quest) == "table" and e.quest[1] or e.quest
-        if q and q ~= e.name then G:AddDoubleLine("Quest", tostring(q) .. (e.qid and ("  #" .. e.qid) or ""), 0.6, 0.8, 1, 1, 1, 1) end
+    -- where
+    local zone = e.zoneName or e.zone
+    if zone or (e.place and e.place ~= "") then
+        Section(G, "WHERE")
+        if zone then
+            local line = "|cffffffff" .. zone .. "|r"
+            if e.x and e.y then line = line .. ("  |cffaaaaaa(%.1f, %.1f)|r"):format(e.x, e.y) end
+            G:AddLine(line)
+        end
+        if e.place and e.place ~= "" then G:AddLine(e.place, 0.85, 0.85, 0.85, true) end
     end
-    local item = e.item
-    if item and item ~= e.name then G:AddDoubleLine("Item", tostring(item), 0.6, 0.8, 1, 1, 1, 1) end
 
-    -- what it gives, and how to get it (the reward sentence is pulled out so it stands apart)
+    -- quest and item
+    local q = type(e.quest) == "table" and e.quest[1] or e.quest
+    local showQ = q and q ~= e.name
+    local itemTxt = e.item and ((type(e.item) == "table") and table.concat(e.item, ", ") or e.item)
+    if (showQ) or (itemTxt and itemTxt ~= e.name) then
+        Section(G, "QUEST AND ITEM")
+        if showQ then G:AddDoubleLine("Quest", tostring(q) .. (e.qid and ("  #" .. e.qid) or ""), 0.6, 0.8, 1, 1, 1, 1) end
+        if itemTxt and itemTxt ~= e.name then G:AddDoubleLine("Item", itemTxt, 0.6, 0.8, 1, 1, 1, 1) end
+    end
+
+    -- how to get it, and what it gives
     local note = e.note
     if note and note ~= "" and ns.db.showHints ~= false then
         local reward = note:match("[Rr]eward:%s*([^\n]+)")
         local how = reward and (note:gsub("%s*[Rr]eward:%s*[^\n]+", "")) or note
-        how = how and how:gsub("^%s+", ""):gsub("%s+$", "")
-        if how and how ~= "" then G:AddLine((e.cat == "pet" and "Source: " or "How: ") .. how, 0.9, 0.9, 0.9, true) end
-        if reward then G:AddLine("Reward: " .. reward, 0.5, 1, 0.5, true) end
+        how = how:gsub("^%s+", ""):gsub("%s+$", "")
+        if how ~= "" then
+            Section(G, e.cat == "pet" and "SOURCE" or "HOW TO GET IT")
+            for _, line in ipairs(NoteLines(how)) do G:AddLine("|cff888888-|r " .. line, 0.92, 0.92, 0.92, true) end
+        end
+        if reward then
+            Section(G, "REWARD")
+            G:AddLine(reward, 0.45, 1, 0.55, true)
+        end
     end
 
-    -- library books count toward the library rewards
+    -- progress
     if e.cat == "book" then
         local _, have, done = T.Counts("book")
         local m = T.Milestone()
-        G:AddLine(" ")
-        G:AddLine(("Counts toward the library: %d handed in, %d in hand."):format(done or 0, have or 0), 0.6, 0.8, 1, true)
+        Section(G, "LIBRARY")
+        G:AddLine(("%d handed in, %d in hand"):format(done or 0, have or 0), 0.8, 0.9, 1)
         if m then G:AddLine(("Next reward at %d books (%d to go): %s"):format(m.books, m.need, m.rewards), 0.6, 0.8, 1, true) end
         local lp = ns.LIBRARIAN_POINTS[T.Faction()] or ns.LIBRARIAN_POINTS.A
         if lp then G:AddLine("Hand it in to " .. lp.name, 0.8, 0.8, 0.8, true) end
     elseif e.cat == "bag" then
         local total = T.ChainInfo and select(1, T.ChainInfo())
         local n = tonumber((e.key or ""):match("(%d+)$"))
-        if n and total then G:AddLine(("Step %d of %s in the chain."):format(n, tostring(total)), 0.6, 0.8, 1) end
+        if n and total then Section(G, "CHAIN") G:AddLine(("Step %d of %s"):format(n, tostring(total)), 0.8, 0.9, 1) end
     end
 
     local d = T.Distance(e)
-    if d then G:AddLine(Dist(d) .. " away", 0.5, 1, 0.5) end
+    if d then G:AddLine(" ") G:AddLine(Dist(d) .. " away", 0.5, 1, 0.5) end
+
+    -- model preview for pets, tames and summons
+    local wantsModel = e.cat == "pet" or e.npc or e.pet
+    if wantsModel then
+        if not CreatureFor(e) then
+            G:AddLine(" ")
+            G:AddLine("3D preview: not available yet", 0.5, 0.5, 0.5)
+        end
+    end
+
     G:AddLine(" ")
-    G:AddLine("Box: tick it when you have finished this one.", 0.7, 0.7, 0.7)
-    G:AddLine("Track: show it on the tracker and the maps.", 0.7, 0.7, 0.7)
-    G:AddLine("Go: point the map arrow at it.", 0.7, 0.7, 0.7)
+    G:AddLine("Box: tick it   Track: show it on the maps   Go: point the arrow", 0.55, 0.55, 0.55, true)
     G:Show()
+    if wantsModel or e.npc then ShowPreview(e) else UI.HidePreview() end
 end
+UI.RowTooltip = RowTooltip
 
 local function ApplyLook()
     if not W then return end
@@ -594,7 +699,7 @@ local function BuildWindow()
         end)
         r.go:SetScript("OnLeave", function() GameTooltip:Hide() end)
         r:SetScript("OnEnter", function(self) self.hl:Show() RowTooltip(self) end)
-        r:SetScript("OnLeave", function(self) self.hl:Hide() GameTooltip:Hide() end)
+        r:SetScript("OnLeave", function(self) self.hl:Hide() GameTooltip:Hide() UI.HidePreview() end)
         r:SetScript("OnClick", function(self, btn)
             local e = self.entry
             if not e then return end
