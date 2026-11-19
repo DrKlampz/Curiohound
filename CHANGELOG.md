@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Fishing gear you have to find: the Blump pole, Nat Pagle's FC-5000, the Big Iron pole, the Stranglethorn Fishing Extravaganza hats, boots, line and Arcanite pole, Nat Pagle's quest, and more lures and drops.
 - More to collect: the Legacy reward track (air rifle toy, tabard, Spectral Bear mount), how your first mount works, the mounts nobody has found a source for yet, the Horde Riverglades ring and the Broken Tooth hunter tame.
 - More collectibles: 13 more companion pets with known sources (whelps, Zephras and Riverglades pets, Engineering and Tailoring pets), the unsolved Stone Key trail, Among the Faithful, the Hidden Blade clue, the Zephras Galestriders and the Pack Kodo.
 - More class secrets: the Skyborne Mage wand and Warrior shield, the unsolved Mage battle sword, the new Horde Paladin quest rewards, the Alliance Shaman fire quest, the level 60 epic mounts for Warlock and Paladin, and Kyle's Gone Missing in Mulgore.
