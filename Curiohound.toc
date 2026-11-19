@@ -6,7 +6,7 @@
 ## Category: Collections
 ## X-License: MIT
 ## X-Curse-Project-ID: 1815676
-## X-Wago-ID: QNI493Ne
+## X-Wago-ID: QNl493Ne
 ## IconTexture: Interface\AddOns\Curiohound\Media\Icon
 ## AddonCompartmentFunc: Curiohound_OnAddonCompartmentClick
 ## SavedVariables: CuriohoundDB
