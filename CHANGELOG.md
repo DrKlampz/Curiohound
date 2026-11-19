@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- More class secrets: the Skyborne Mage wand and Warrior shield, the unsolved Mage battle sword, the new Horde Paladin quest rewards, the Alliance Shaman fire quest, the level 60 epic mounts for Warlock and Paladin, and Kyle's Gone Missing in Mulgore.
 - New: class secrets and class-only rewards in Gear and perks, shown only for that class. Hunter ghost tames (Ghost Saber from the cat figurines, Coldrasp, Ghostfang, Ghostmaw), the Rogue Eye of Bhossca chain, the Warrior, Shaman, Mage, Warlock and Alliance Paladin weapon quests, and the free class mounts.
 - New: how to get your first mount for free as a Human (pick up the 'Your First Horse' quest in Menethil Harbor instead of Elwynn Forest to get the Black Stallion).
 - New: the full Dawn Waker secret, step by step. It starts with the Ancient Heirloom ring on Zephras Isle (Thendal Village), then the Night Watchman's Torch, the hilt, the sword Eluvi'ana, the Befouled Water Globe, the Highborne Spirit and Narassin's Tome, the three cleansing materials, the Hyjal ritual and Prince Tortheldrin. Each step has its spot, level and notes, and is ticked automatically when the item is in your bags.
