@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- New: the Dawn Waker secret that starts with the Ancient Heirloom ring on Zephras Isle is now a full step-by-step chain under Secrets: the ring, the Duskwood torch, the hilt, Eluvi'ana, the water globe, the Highborne Spirit and tome, Mordent Evenshade, the three cleansing materials, the Hyjal ritual and Prince Tortheldrin, each with its spot, level and what to carry. Ashenvale added as a zone.
 - The tooltip on each list entry now shows far more: what kind of collectible it is, where it is (zone, spot and map coordinates), the level and faction it needs, the quest and item behind it, how to get it, what it rewards, and for library books how many are handed in, the next library reward and who to hand it to.
 - Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
 - Books in your bags are now matched by name ignoring punctuation and capitals, and a book that leaves your bags right after a quest was handed in counts as turned in, not only at the librarian. Curiohound also records what is in your bags and what you hand in (saved data: bagDump, turnLog, bagLog) so odd names can be sorted out.
