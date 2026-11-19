@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.2.2
 - Every library book is now linked to its hand-in quest by name, so turning one in (or having done it before) ticks that exact book.
 
 ## v0.2.1
