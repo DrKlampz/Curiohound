@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Your custom look is now shared with your other add-ons: change colors, background, border or opacity in one and the rest follow (the newest change wins). It is on by default; untick "Sync my look with my other add-ons" in the Look window to turn it off.
 - The tracker is hidden while the world map is open (switch it back on in Options > Tracker).
 - The main window now sits above the tracker, so the tracker no longer draws over the book list.
 
