@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- More to collect: the Legacy reward track (air rifle toy, tabard, Spectral Bear mount), how your first mount works, the mounts nobody has found a source for yet, the Horde Riverglades ring and the Broken Tooth hunter tame.
 - More collectibles: 13 more companion pets with known sources (whelps, Zephras and Riverglades pets, Engineering and Tailoring pets), the unsolved Stone Key trail, Among the Faithful, the Hidden Blade clue, the Zephras Galestriders and the Pack Kodo.
 - More class secrets: the Skyborne Mage wand and Warrior shield, the unsolved Mage battle sword, the new Horde Paladin quest rewards, the Alliance Shaman fire quest, the level 60 epic mounts for Warlock and Paladin, and Kyle's Gone Missing in Mulgore.
 - New: class secrets and class-only rewards in Gear and perks, shown only for that class. Hunter ghost tames (Ghost Saber from the cat figurines, Coldrasp, Ghostfang, Ghostmaw), the Rogue Eye of Bhossca chain, the Warrior, Shaman, Mage, Warlock and Alliance Paladin weapon quests, and the free class mounts.
