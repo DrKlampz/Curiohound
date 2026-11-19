@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Books in your bags are now matched by name ignoring punctuation and capitals, and a book that leaves your bags right after a quest was handed in counts as turned in, not only at the librarian. Curiohound also records what is in your bags and what you hand in (saved data: bagDump, turnLog, bagLog) so odd names can be sorted out.
 - The "Pulse the flair" option now also pulses the edge finish (soft, bevel, double line and glow), not just the corner studs.
 
 ## v0.2.4

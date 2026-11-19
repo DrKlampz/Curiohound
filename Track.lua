@@ -39,7 +39,7 @@ function T.Rebuild()
         all[#all + 1] = e
         if not byKey[e.key] then byKey[e.key] = {} keyOrder[#keyOrder + 1] = e.key end
         table.insert(byKey[e.key], e)
-        for _, n in ipairs(asList(e.item)) do local k = lower(n) itemIndex[k] = itemIndex[k] or {} table.insert(itemIndex[k], e) end
+        for _, n in ipairs(asList(e.item)) do local k = qkey(n) itemIndex[k] = itemIndex[k] or {} table.insert(itemIndex[k], e) end
         for _, n in ipairs(asList(e.quest)) do local k = qkey(n) questIndex[k] = questIndex[k] or {} table.insert(questIndex[k], e) end
         if e.pet then local k = lower(e.pet) petIndex[k] = petIndex[k] or {} table.insert(petIndex[k], e) end
     end
@@ -502,7 +502,7 @@ end
 ---------------------------------------------------------------------------
 local prevBags, bagsReady = {}, false
 local function ScanBags()
-    local set = {}
+    local set, raw = {}, {}
     local getN = (C_Container and C_Container.GetContainerNumSlots) or GetContainerNumSlots
     local getLink = (C_Container and C_Container.GetContainerItemLink) or GetContainerItemLink
     if not (getN and getLink) then return nil end
@@ -512,7 +512,7 @@ local function ScanBags()
             local ok, inv = pcall(ContainerIDToInventoryID, bag)
             local link = ok and inv and GetInventoryItemLink("player", inv)
             local name = link and link:match("|h%[(.-)%]|h")
-            if name then set[lower(name)] = (set[lower(name)] or 0) + 1 end
+            if name then set[qkey(name)] = (set[qkey(name)] or 0) + 1 raw[#raw + 1] = name end
         end
     end
     for bag = 0, 5 do
@@ -521,10 +521,11 @@ local function ScanBags()
             local link = getLink(bag, slot)
             if link then
                 local name = link:match("|h%[(.-)%]|h")
-                if name then set[lower(name)] = (set[lower(name)] or 0) + 1 end
+                if name then set[qkey(name)] = (set[qkey(name)] or 0) + 1 raw[#raw + 1] = name end
             end
         end
     end
+    T.lastBagNames = raw
     return set
 end
 T.ScanBagsRaw = ScanBags
@@ -578,19 +579,39 @@ function T.CheckBags()
             end
         end
     end
-    -- books that left the bags while talking to a librarian were turned in
-    if bagsReady and T.AtLibrarian() then
-        T.ProbeLibrarian("bags")
+    -- a plain list of what is in the bags, for working out names that do not match (saved data: bagDump)
+    do
+        local names = {}
+        for _, n in ipairs(T.lastBagNames or {}) do names[#names + 1] = n end
+        table.sort(names)
+        local sig = table.concat(names, "|")
+        if sig ~= T.bagSig then
+            T.bagSig = sig
+            ns.db.bagDump = { when = date and date("%Y-%m-%d %H:%M") or "?", items = names }
+        end
+    end
+    -- books that left the bags while talking to a librarian, or right after a quest was handed in, were turned in
+    local atLib = T.AtLibrarian()
+    local justTurned = GetTime() - (T.lastTurnIn or -999) < 20
+    if bagsReady then
         for name in pairs(prevBags) do
             if not set[name] then
                 for _, e in ipairs(itemIndex[name] or {}) do
                     if e.cat == "book" then
-                        if T.State(e.key) < 2 then T.SetState(e.key, 2, "turnin") end
-                        RecordTurnIn(e.name)
+                        local log = ns.db.bagLog or {}
+                        ns.db.bagLog = log
+                        log[#log + 1] = { book = e.name, atLibrarian = atLib and true or false, afterQuest = justTurned and true or false,
+                            npc = UnitName("npc") or UnitName("target"), when = date and date("%Y-%m-%d %H:%M") or "?" }
+                        while #log > 30 do table.remove(log, 1) end
+                        if atLib or justTurned then
+                            if T.State(e.key) < 2 then T.SetState(e.key, 2, "turnin") end
+                            RecordTurnIn(e.name)
+                        end
                     end
                 end
             end
         end
+        if atLib then T.ProbeLibrarian("bags") end
     end
     prevBags = set
     bagsReady = true
@@ -873,6 +894,14 @@ ev:SetScript("OnEvent", function(_, event, a1, a2)
     elseif event == "QUEST_TURNED_IN" then
         C_Timer.After(0.5, T.ScanQuestIDs)
         local title = TitleFor(a1)
+        T.lastTurnIn = GetTime()
+        do   -- what was handed in, and to whom (saved data: turnLog)
+            local log = ns.db.turnLog or {}
+            ns.db.turnLog = log
+            log[#log + 1] = { id = a1, title = title or "?", npc = UnitName("npc") or UnitName("target"), when = date and date("%Y-%m-%d %H:%M") or "?" }
+            while #log > 40 do table.remove(log, 1) end
+        end
+        C_Timer.After(1.5, T.CheckBags)
         if title then QuestDone(title) end
     elseif event == "QUEST_LOG_UPDATE" then
         if not qlTimer then
