@@ -12,6 +12,7 @@
 ## SavedVariables: CuriohoundDB
 
 Core.lua
+IssueLog.lua
 Look.lua
 LookSetup.lua
 Data.lua
