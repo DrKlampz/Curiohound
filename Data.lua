@@ -166,6 +166,26 @@ Pet("Musical Gustjumper", "Hidden pet. Zephras Isle (51.5, 72.1): stand by the f
 Pet("Excitable Slime", "Hidden pet (Horde). Buy a Nutritious Slime Sludge from Boyle (56.2, 64.6), find the slime in the Undercity canal and /dance at it until it dances back and gives the quest WRIGGLE.", "H", "undercity", 56.2, 64.6)
 Pet("Baby Crocolisk", "Hidden pet (Alliance). Drops from Sewer Beast, a level 50 elite in the Stormwind canals. Needs a group.", "A", "stormwind")
 
+-- more companion pets with known sources (exact drop sources are not listed by the guides, so these say where to look)
+Pet("Tiny Crimson Whelp", "Drops in the Wetlands. Exact source not listed yet.", nil, "wetlands")
+Pet("Dark Whelp", "Drops in the Badlands and Dustwallow Marsh. Exact source not listed yet.", nil, "badlands")
+Pet("Tiny Emerald Whelp", "Drops in the Swamp of Sorrows. Exact source not listed yet.", nil, "swamp")
+Pet("Azure Whelp", "Drops in Winterspring. Exact source not listed yet.", nil, "winterspring")
+Pet("Disgusting Oozeling", "Drops from oozes in mid to high level zones.", nil, nil)
+Pet("Hyacinth Macaw", "Drops in Stranglethorn Vale.", nil, "stv")
+Pet("Westfall Chicken", "Westfall and Tirisfal Glades: quests and emote triggers.", nil, "westfall")
+Pet("Skybound Breezelet", "Drops on Zephras Isle.", nil, "zephras")
+Pet("Zephyr Chick", "Drops on Zephras Isle.", nil, "zephras")
+Pet("Rivergling Turtle", "Drops in the Riverglades.", nil, "riverglades")
+Pet("Amber Strigid Hatchling", "Drops in the Riverglades.", nil, "riverglades")
+Pet("Mossy Pebble-Prowler", "Drops in Shen'Dralas.", nil, nil)
+Pet("Mechanical Squirrel", "Engineering: build it from a blueprint.", nil, nil)
+Pet("Lifelike Toad", "Engineering: build it from a blueprint.", nil, nil)
+Pet("Tranquil Mechanical Yeti", "Engineering: build it from a blueprint.", nil, nil)
+Pet("Lil' Smoky", "Engineering: build it from a blueprint.", nil, nil)
+Pet("Pet Bombling", "Engineering: build it from a blueprint.", nil, nil)
+Pet("Feathered Dream-Catcher", "Tailoring: learn the pattern and sew it.", nil, nil)
+
 ---------------------------------------------------------------------------
 -- Secrets and extras
 ---------------------------------------------------------------------------
@@ -197,6 +217,11 @@ Secret("Embrace of the Viper", "Druids: wear all five pieces of the Wailing Cave
 Secret("Blessing of Kalimdor", "Collect two pieces of the Barrens rare set (Humar the Pridelord, Swiftmane, Takk the Leaper): +5% movement speed in the Barrens and Stonetalon.", "barrens")
 Secret("Savory Whimsyfin Delight", "Recipe drops from random mobs (for example Great Goretusks in Redridge). Cook it and eat it for an orc ninja or pirate outfit.", "redridge")
 Secret("Riverglades black market goblin", "A goblin vendor in Riverglades who sells Gift of Galloping (15 days, +10% mounted speed, 150 gold) and caps prices on rare crafting materials.", nil)
+Secret("The Stone Key (unsolved)", "A long unsolved trail. Burnt pages start at Thoradin's Wall and lead through the Undercity sewers, with clues in the Blasted Lands, Un'Goro and Blackrock Mountain, to a Stone Key in the Riverglades (Burnt Page, then Keystone Fragment, then Stone Key). Nobody has found the lock yet.", "hillsbrad")
+Secret("Among the Faithful", "Zephras Isle, level 5 and up. Hide behind the right wardrobe and let the priests finish talking. It is a seven-quest chain from Shen'dar to Valanaar. The reward is not listed.", "zephras", nil, nil, { lvl = 5 })
+Secret("Hidden Blade (podcast clue)", "Decode five Darnassian words from the podcast board. There is no playable route yet and the weapon's source is unknown. Tick it if Blizzard reveals more.", nil)
+Secret("Galestrider mounts (Zephras Isle)", "Genn Fairweather on Zephras Isle sells Galestriders: 20 gold at level 40, or 200 gold for the swift one at level 60.", "zephras")
+Secret("Pack Kodo", "Level 60, Journeyman Riding, Exalted with your faction's supply reputation and 6,000 Merchant's Favor.", nil, nil, nil, { lvl = 60 })
 Secret("Hyjal legendary questline", "The legendary questline (six vessels and the Bough of the World Tree, tied to Hyjal) has no details yet. Tick it when you find out more.", nil)
 
 ---------------------------------------------------------------------------
