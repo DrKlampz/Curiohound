@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- The tooltip on each list entry now shows far more: what kind of collectible it is, where it is (zone, spot and map coordinates), the level and faction it needs, the quest and item behind it, how to get it, what it rewards, and for library books how many are handed in, the next library reward and who to hand it to.
 - Removed the add-on-to-add-on theming hooks and cross-add-on names from the window look code; the shared look sync between your add-ons works the same.
 - Books in your bags are now matched by name ignoring punctuation and capitals, and a book that leaves your bags right after a quest was handed in counts as turned in, not only at the librarian. Curiohound also records what is in your bags and what you hand in (saved data: bagDump, turnLog, bagLog) so odd names can be sorted out.
 - The "Pulse the flair" option now also pulses the edge finish (soft, bevel, double line and glow), not just the corner studs.

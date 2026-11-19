@@ -257,26 +257,73 @@ local function MakeDropdown(label, y, getChoices, onPick)
     return { SetText = function(_, s) btn:SetText(s) end }
 end
 
+local CAT_WORD = { book = "Library book", bag = "Cozy Sleeping Bag step", pet = "Companion pet", secret = "Secret or extra", bagq = "Bag or storage", perk = "Gear or perk", custom = "My own list" }
+
 local function RowTooltip(row)
     local e = row.entry
     if not e then return end
     local st = T.State(e.key)
-    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-    GameTooltip:SetText(e.name, 1, 0.82, 0)
-    GameTooltip:AddLine(STATE_WORD[st] .. (T.Pursued(e.key) and "  |  tracking" or ""), 0.8, 0.8, 0.8)
-    local t = T.Target(e)
-    if t and t.text then GameTooltip:AddLine(t.text, 1, 1, 1, true) end
-    if e.cat == "book" then
-        local m = T.Milestone()
-        if m then GameTooltip:AddLine(("Next library reward: %d books (%d to go). %s"):format(m.books, m.need, m.rewards), 0.6, 0.8, 1, true) end
+    local G = GameTooltip
+    G:SetOwner(row, "ANCHOR_RIGHT")
+    G:SetText(e.name, 1, 0.82, 0)
+    G:AddLine((CAT_WORD[e.cat] or "Collectible") .. "  |  " .. STATE_WORD[st] .. (T.Pursued(e.key) and "  |  tracking" or ""), 0.8, 0.8, 0.8)
+
+    -- where it is
+    local where = e.zoneName or e.zone
+    if where then
+        local line = where
+        if e.x and e.y then line = line .. ("  (%.1f, %.1f)"):format(e.x, e.y) end
+        G:AddDoubleLine("Where", line, 0.6, 0.8, 1, 1, 1, 1)
     end
+    if e.place and e.place ~= "" then G:AddLine(e.place, 1, 1, 1, true) end
+
+    -- who can have it
+    local need = {}
+    if e.lvl and e.lvl > 1 then need[#need + 1] = "level " .. e.lvl end
+    if e.fac == "A" then need[#need + 1] = "Alliance only" elseif e.fac == "H" then need[#need + 1] = "Horde only" end
+    if e.class then need[#need + 1] = tostring(e.class) end
+    if #need > 0 then G:AddDoubleLine("Needs", table.concat(need, ", "), 0.6, 0.8, 1, 1, 1, 1) end
+
+    -- the quest and the item behind it
+    if e.quest then
+        local q = type(e.quest) == "table" and e.quest[1] or e.quest
+        if q and q ~= e.name then G:AddDoubleLine("Quest", tostring(q) .. (e.qid and ("  #" .. e.qid) or ""), 0.6, 0.8, 1, 1, 1, 1) end
+    end
+    local item = e.item
+    if item and item ~= e.name then G:AddDoubleLine("Item", tostring(item), 0.6, 0.8, 1, 1, 1, 1) end
+
+    -- what it gives, and how to get it (the reward sentence is pulled out so it stands apart)
+    local note = e.note
+    if note and note ~= "" and ns.db.showHints ~= false then
+        local reward = note:match("[Rr]eward:%s*([^\n]+)")
+        local how = reward and (note:gsub("%s*[Rr]eward:%s*[^\n]+", "")) or note
+        how = how and how:gsub("^%s+", ""):gsub("%s+$", "")
+        if how and how ~= "" then G:AddLine((e.cat == "pet" and "Source: " or "How: ") .. how, 0.9, 0.9, 0.9, true) end
+        if reward then G:AddLine("Reward: " .. reward, 0.5, 1, 0.5, true) end
+    end
+
+    -- library books count toward the library rewards
+    if e.cat == "book" then
+        local _, have, done = T.Counts("book")
+        local m = T.Milestone()
+        G:AddLine(" ")
+        G:AddLine(("Counts toward the library: %d handed in, %d in hand."):format(done or 0, have or 0), 0.6, 0.8, 1, true)
+        if m then G:AddLine(("Next reward at %d books (%d to go): %s"):format(m.books, m.need, m.rewards), 0.6, 0.8, 1, true) end
+        local lp = ns.LIBRARIAN_POINTS[T.Faction()] or ns.LIBRARIAN_POINTS.A
+        if lp then G:AddLine("Hand it in to " .. lp.name, 0.8, 0.8, 0.8, true) end
+    elseif e.cat == "bag" then
+        local total = T.ChainInfo and select(1, T.ChainInfo())
+        local n = tonumber((e.key or ""):match("(%d+)$"))
+        if n and total then G:AddLine(("Step %d of %s in the chain."):format(n, tostring(total)), 0.6, 0.8, 1) end
+    end
+
     local d = T.Distance(e)
-    if d then GameTooltip:AddLine(Dist(d) .. " away", 0.5, 1, 0.5) end
-    GameTooltip:AddLine(" ")
-    GameTooltip:AddLine("Box: tick it when you have finished this one.", 0.7, 0.7, 0.7)
-    GameTooltip:AddLine("Track: show it on the tracker and the maps.", 0.7, 0.7, 0.7)
-    GameTooltip:AddLine("Go: point the map arrow at it.", 0.7, 0.7, 0.7)
-    GameTooltip:Show()
+    if d then G:AddLine(Dist(d) .. " away", 0.5, 1, 0.5) end
+    G:AddLine(" ")
+    G:AddLine("Box: tick it when you have finished this one.", 0.7, 0.7, 0.7)
+    G:AddLine("Track: show it on the tracker and the maps.", 0.7, 0.7, 0.7)
+    G:AddLine("Go: point the map arrow at it.", 0.7, 0.7, 0.7)
+    G:Show()
 end
 
 local function ApplyLook()
