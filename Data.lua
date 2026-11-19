@@ -179,11 +179,6 @@ Pet("Zephyr Chick", "Drops on Zephras Isle.", nil, "zephras")
 Pet("Rivergling Turtle", "Drops in the Riverglades.", nil, "riverglades")
 Pet("Amber Strigid Hatchling", "Drops in the Riverglades.", nil, "riverglades")
 Pet("Mossy Pebble-Prowler", "Drops in Shen'Dralas.", nil, nil)
-Pet("Mechanical Squirrel", "Engineering: build it from a blueprint.", nil, nil)
-Pet("Lifelike Toad", "Engineering: build it from a blueprint.", nil, nil)
-Pet("Tranquil Mechanical Yeti", "Engineering: build it from a blueprint.", nil, nil)
-Pet("Lil' Smoky", "Engineering: build it from a blueprint.", nil, nil)
-Pet("Pet Bombling", "Engineering: build it from a blueprint.", nil, nil)
 Pet("Feathered Dream-Catcher", "Tailoring: learn the pattern and sew it.", nil, nil)
 
 ---------------------------------------------------------------------------
