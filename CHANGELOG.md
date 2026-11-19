@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- New: class secrets and class-only rewards in Gear and perks, shown only for that class. Hunter ghost tames (Ghost Saber from the cat figurines, Coldrasp, Ghostfang, Ghostmaw), the Rogue Eye of Bhossca chain, the Warrior, Shaman, Mage, Warlock and Alliance Paladin weapon quests, and the free class mounts.
+- New: how to get your first mount for free as a Human (pick up the 'Your First Horse' quest in Menethil Harbor instead of Elwynn Forest to get the Black Stallion).
 - New: the full Dawn Waker secret, step by step. It starts with the Ancient Heirloom ring on Zephras Isle (Thendal Village), then the Night Watchman's Torch, the hilt, the sword Eluvi'ana, the Befouled Water Globe, the Highborne Spirit and Narassin's Tome, the three cleansing materials, the Hyjal ritual and Prince Tortheldrin. Each step has its spot, level and notes, and is ticked automatically when the item is in your bags.
 - New: the Dawn Waker secret that starts with the Ancient Heirloom ring on Zephras Isle is now a full step-by-step chain under Secrets: the ring, the Duskwood torch, the hilt, Eluvi'ana, the water globe, the Highborne Spirit and tome, Mordent Evenshade, the three cleansing materials, the Hyjal ritual and Prince Tortheldrin, each with its spot, level and what to carry. Ashenvale added as a zone.
 - The tooltip on each list entry now shows far more: what kind of collectible it is, where it is (zone, spot and map coordinates), the level and faction it needs, the quest and item behind it, how to get it, what it rewards, and for library books how many are handed in, the next library reward and who to hand it to.
