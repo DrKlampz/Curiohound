@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Every library book is now linked to its hand-in quest by name, so turning one in (or having done it before) ticks that exact book.
+
 ## v0.2.1
 - Linked the CurseForge and Wago projects. Library books are now matched to your finished quests, the library line shows how many books you have turned in, and the scan records details to help match old turn-ins.
 

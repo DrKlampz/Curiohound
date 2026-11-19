@@ -63,7 +63,7 @@ ns.MILESTONES = {
 }
 
 local function Book(zone, place, x, y, lvl, fac, name, hint, key)
-    add({ cat = "book", zone = zone, x = x, y = y, lvl = lvl, fac = fac, name = name, place = place, note = hint, item = name, key = key })
+    add({ cat = "book", zone = zone, x = x, y = y, lvl = lvl, fac = fac, name = name, place = place, note = hint, item = name, quest = { name, (name:gsub("^[Tt]he%s+", "")) }, key = key })
 end
 Book("elwynn", "Tower of Azora, top floor", 65.4, 70.1, 1, "A", "Archmage Theocritus' Research Journal")
 Book("ironforge", "Hall of Explorers, library table", 75.7, 10.5, 1, "A", "Archmage Antonidas: The Unabridged Autobiography")
