@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- The main window now sits above the tracker, so the tracker no longer draws over the book list.
+
 ## v0.2.2
 - Every library book is now linked to its hand-in quest by name, so turning one in (or having done it before) ticks that exact book.
 
