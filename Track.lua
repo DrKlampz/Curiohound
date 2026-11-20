@@ -53,7 +53,31 @@ end
 ---------------------------------------------------------------------------
 -- Character, state, pursuit
 ---------------------------------------------------------------------------
-function T.Me() return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?") end
+local function RealmFallback(db, name)
+    local r = GetRealmName and GetRealmName()
+    if type(r) ~= "string" or r == "" then r = GetNormalizedRealmName and GetNormalizedRealmName() end
+    if type(r) == "string" and r ~= "" then
+        if type(db) == "table" then db.lastRealm = r end
+        return r
+    end
+    if type(db) == "table" then
+        if type(db.lastRealm) == "string" and db.lastRealm ~= "" then return db.lastRealm end
+        local pre = (name or "?") .. "-"
+        for _, t in pairs(db) do
+            if type(t) == "table" then
+                for k in pairs(t) do
+                    if type(k) == "string" and #k > #pre and k:sub(1, #pre) == pre then
+                        local s = k:sub(#pre + 1)
+                        db.lastRealm = s
+                        return s
+                    end
+                end
+            end
+        end
+    end
+    return ""
+end
+function T.Me() local n = UnitName("player") or "?" return n .. "-" .. RealmFallback(_G.CuriohoundDB, n) end
 -- Horde or Alliance, found from the character itself (faction group first, then race)
 local HORDE_RACES = { Orc = true, Tauren = true, Troll = true, Scourge = true, Undead = true, BloodElf = true, Goblin = true }
 local ALLIANCE_RACES = { Human = true, Dwarf = true, NightElf = true, Gnome = true, Draenei = true, Worgen = true }
