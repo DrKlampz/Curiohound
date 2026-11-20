@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.6
+
+- Gear and perks now lists class-only quest rewards and abilities for every class: starter weapons, class armor quests, demon and totem quests, druid forms, new abilities, Rhok'delar, the Skyfury set, the Sunken Temple quest, and the Tier 0 and Tier 0.5 armor sets for all nine classes
+
 ## v0.3.5
 
 - New background symbols: sword, crossed swords, shield, sun and paw print
