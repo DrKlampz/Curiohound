@@ -77,7 +77,19 @@ local function RealmFallback(db, name)
     end
     return ""
 end
-function T.Me() local n = UnitName("player") or "?" return n .. "-" .. RealmFallback(_G.CuriohoundDB, n) end
+-- two-part names ("Dr Flamel") come back from UnitName as first name + last name in the realm slot;
+-- without the second part every "Dr ..." character shared one record
+local function FullName()
+    local first, second = UnitName("player")
+    local name = first or "?"
+    if type(first) == "string" and type(second) == "string" and second ~= "" and not first:find(" ", 1, true) then
+        local r1 = GetRealmName and GetRealmName()
+        local r2 = GetNormalizedRealmName and GetNormalizedRealmName()
+        if second ~= r1 and second ~= r2 then name = first .. " " .. second end
+    end
+    return name
+end
+function T.Me() local n = FullName() return n .. "-" .. RealmFallback(_G.CuriohoundDB, n) end
 -- Horde or Alliance, found from the character itself (faction group first, then race)
 local HORDE_RACES = { Orc = true, Tauren = true, Troll = true, Scourge = true, Undead = true, BloodElf = true, Goblin = true }
 local ALLIANCE_RACES = { Human = true, Dwarf = true, NightElf = true, Gnome = true, Draenei = true, Worgen = true }
@@ -121,7 +133,18 @@ function T.Char()
     return c
 end
 
-function T.State(key) return T.Char().s[key] or 0 end
+-- Progress belongs to the character, except for things that unlock for the whole account (e.acct)
+function T.State(key)
+    local mine = T.Char().s[key] or 0
+    local e = byKey[key] and byKey[key][1]
+    if e and e.acct and ns.db and ns.db.chars then
+        for _, c in pairs(ns.db.chars) do
+            local v = c.s and c.s[key]
+            if v and v > mine then mine = v end
+        end
+    end
+    return mine
+end
 
 -- finishing a step of the sleeping-bag chain finishes the ones before it
 local function ChainBefore(key)

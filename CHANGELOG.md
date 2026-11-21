@@ -2,6 +2,9 @@
 
 ## v0.3.8
 
+- Fixed: characters with two-part names (like "Dr Flamel") all shared one set of progress. Each character now keeps its own
+- Progress is per character; only things that unlock for the whole account (the Legacy reward toy, tabard and bear mount) are shared
+
 - A character picker at the top of the window: look at any of your characters' collections, each with its own progress, tracking and bars (read-only for the others)
 
 ## v0.3.7
