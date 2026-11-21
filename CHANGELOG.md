@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.9
+
+- Fixed an error in Shadowfang Keep: the game can return a list of finished quests it will not let an add-on walk through, and the librarian check now copes with that
+
 ## v0.3.8
 
 - Fixed: characters with two-part names (like "Dr Flamel") all shared one set of progress. Each character now keeps its own

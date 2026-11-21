@@ -605,10 +605,12 @@ function T.AtLibrarian() return GetTime() < libUntil end
 -- the saved data (probe.turnins) so the book-to-id pattern can be worked out, and old turn-ins read back.
 local snapIds
 local function FinishedSet()
-    local raw = GetQuestsCompleted and GetQuestsCompleted()
-    if type(raw) ~= "table" then return nil end
+    local ok0, raw = pcall(function() return GetQuestsCompleted and GetQuestsCompleted() end)
+    if not ok0 or type(raw) ~= "table" then return nil end
     local set = {}
-    for id, v in pairs(raw) do if v then set[id] = true end end
+    -- the game can hand back a list it will not let us walk (secret keys); then there is nothing to compare
+    local ok = pcall(function() for id, v in pairs(raw) do if v then set[id] = true end end end)
+    if not ok then return nil end
     return set
 end
 function T.SnapFinished()
@@ -941,12 +943,14 @@ function T.ProbeLibrarian(why)
             for i, x in ipairs(ac) do p.active[i] = x.title or "?" end
         end
     end)
-    local raw = GetQuestsCompleted and GetQuestsCompleted()
-    if type(raw) == "table" then
-        local n = 0
-        for _ in pairs(raw) do n = n + 1 end
-        p.completedCount = n
-    end
+    pcall(function()
+        local raw = GetQuestsCompleted and GetQuestsCompleted()
+        if type(raw) == "table" then
+            local n = 0
+            for _ in pairs(raw) do n = n + 1 end
+            p.completedCount = n
+        end
+    end)
 end
 
 local npcSeen, qlTimer
