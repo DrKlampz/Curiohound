@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.8
+
+- A character picker at the top of the window: look at any of your characters' collections, each with its own progress, tracking and bars (read-only for the others)
+
 ## v0.3.7
 
 - Redrawn anarchy symbol with a hand-brushed, worn look

@@ -82,6 +82,7 @@ function T.Me() local n = UnitName("player") or "?" return n .. "-" .. RealmFall
 local HORDE_RACES = { Orc = true, Tauren = true, Troll = true, Scourge = true, Undead = true, BloodElf = true, Goblin = true }
 local ALLIANCE_RACES = { Human = true, Dwarf = true, NightElf = true, Gnome = true, Draenei = true, Worgen = true }
 function T.Faction()
+    if T.viewKey and ns.db.chars[T.viewKey] and ns.db.chars[T.viewKey].faction then return ns.db.chars[T.viewKey].faction end
     local f = UnitFactionGroup and UnitFactionGroup("player")
     if f == "Horde" then return "H" elseif f == "Alliance" then return "A" end
     local _, race = UnitRace and UnitRace("player")
@@ -91,7 +92,26 @@ function T.Faction()
 end
 function T.FactionName() return T.Faction() == "H" and "Horde" or "Alliance" end
 
+-- Viewing another character: the window reads that character's progress (nothing is ever written to it)
+T.viewKey = nil
+function T.ViewKey()
+    local k = ns.db and ns.db.viewChar
+    if k and k ~= T.Me() and ns.db.chars[k] then return k end
+end
+function T.ViewingOther() return T.ViewKey() ~= nil end
+function T.View(fn, ...)
+    T.viewKey = T.ViewKey()
+    local ok, err = pcall(fn, ...)
+    T.viewKey = nil
+    if not ok then error(err, 0) end
+end
+
 function T.Char()
+    if T.viewKey and ns.db.chars[T.viewKey] then
+        local v = ns.db.chars[T.viewKey]
+        v.s = v.s or {} v.p = v.p or {}
+        return v
+    end
     local k = T.Me()
     local c = ns.db.chars[k]
     if not c then c = { s = {}, p = {} } ns.db.chars[k] = c end

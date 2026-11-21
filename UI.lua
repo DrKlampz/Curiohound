@@ -193,12 +193,16 @@ end
 -- a drop-down: a button showing the current choice that opens a list of all choices
 local openMenu
 local function CloseMenu() if openMenu then openMenu:Hide() openMenu = nil end end
-local function MakeDropdown(label, y, getChoices, onPick)
-    local lbl = W:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    lbl:SetPoint("TOPLEFT", 12, y - 4) lbl:SetText(label)
+local function MakeDropdown(label, y, getChoices, onPick, width)
     local btn = CreateFrame("Button", nil, W, "UIPanelButtonTemplate")
     btn:SetHeight(22)
-    btn:SetPoint("TOPLEFT", 52, y) btn:SetPoint("TOPRIGHT", -12, y)
+    if width then
+        btn:SetPoint("TOPRIGHT", -34, y) btn:SetWidth(width)
+    else
+        local lbl = W:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        lbl:SetPoint("TOPLEFT", 12, y - 4) lbl:SetText(label)
+        btn:SetPoint("TOPLEFT", 52, y) btn:SetPoint("TOPRIGHT", -12, y)
+    end
     btn:SetText("")
     local arrow = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     arrow:SetPoint("RIGHT", -8, 0) arrow:SetText("v")
@@ -337,7 +341,7 @@ local function Section(G, label)
     G:AddLine(label, 0.5, 0.75, 1)
 end
 
-local function RowTooltip(row)
+local function RowTooltipBody(row)
     local e = row.entry
     if not e then return end
     local st = T.State(e.key)
@@ -431,6 +435,8 @@ local function RowTooltip(row)
 end
 UI.RowTooltip = RowTooltip
 
+local function RowTooltip(row) T.View(RowTooltipBody, row) end
+
 local function ApplyLook()
     if not W then return end
     local rows = math.min(MAXROWS, math.max(5, math.floor(ns.db.listRows or 12)))
@@ -438,9 +444,15 @@ local function ApplyLook()
 end
 UI.ApplyLook = ApplyLook
 
-function UI.Refresh()
+local function ShortChar(k) return (((k or "?"):gsub("%-.*$", ""))) end
+
+local function RefreshBody()
     if W and W:IsShown() then
         local db = ns.db
+        do
+            local vk = T.ViewKey()
+            W.who:SetText(vk and ("Viewing: " .. ShortChar(vk)) or ("Viewing: " .. ShortChar(T.Me()) .. " (you)"))
+        end
         W.cat:SetText(CatName(db.cat))
         for _, s in ipairs(SORTS) do if s[1] == db.sort then W.sort:SetText(s[2]) end end
         local bars = BarsFor(false)
@@ -531,6 +543,10 @@ function UI.Refresh()
             W.empty:Hide()
         end
     end
+end
+
+function UI.Refresh()
+    T.View(RefreshBody)
     UI.RefreshTracker()
 end
 
@@ -539,6 +555,14 @@ function UI.GoTo(e)
     if not T.Pursued(e.key) then T.SetPursued(e.key, true) end
     T.SetWaypoint(e)
     UI.Refresh()
+end
+
+-- nothing is ever changed on a character you are only looking at
+local function ReadOnly()
+    local k = T.ViewKey()
+    if not k then return false end
+    ns.Print(("You are looking at %s. Pick your own character at the top to change things."):format(ShortChar(k)))
+    return true
 end
 
 local function BuildWindow()
@@ -572,6 +596,22 @@ local function BuildWindow()
     local close = CreateFrame("Button", nil, W, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 2, 2)
 
+    W.who = MakeDropdown("", -8, function()
+        local out, me = {}, T.Me()
+        local keys = {}
+        for k in pairs(ns.db.chars) do keys[#keys + 1] = k end
+        table.sort(keys, function(a, b)
+            if a == me then return true elseif b == me then return false end
+            return a:lower() < b:lower()
+        end)
+        local cur = T.ViewKey() or me
+        for _, k in ipairs(keys) do
+            local c = ns.db.chars[k]
+            local col = c.faction == "H" and "|cffff6060" or (c.faction == "A" and "|cff60a8ff" or "|cffffffff")
+            out[#out + 1] = { id = k, label = col .. k:gsub("%-.*$", "") .. "|r" .. (k == me and "  (you)" or "") .. ((c.level and c.level > 0) and ("  " .. c.level) or ""), current = (k == cur) }
+        end
+        return out
+    end, function(id) ns.db.viewChar = (id ~= T.Me()) and id or nil W.offset = 0 UI.Refresh() end, 200)
     W.cat = MakeDropdown("Show", -34, function()
         local out = {}
         for _, c in ipairs(CATS) do out[#out + 1] = { id = c.id, label = c.name, current = ns.db.cat == c.id } end
@@ -607,16 +647,19 @@ local function BuildWindow()
     W.count:SetPoint("TOPRIGHT", -14, -138) W.count:SetTextColor(0.65, 0.65, 0.7)
 
     local all = Btn(W, "Track all shown", 120, function()
+        if ReadOnly() then return end
         for _, e in ipairs(W.shown or {}) do if T.State(e.key) < 2 then T.SetPursued(e.key, true) end end
         UI.Refresh()
     end)
     all:SetPoint("TOPLEFT", 12, -160)
     local none = Btn(W, "Untrack all shown", 130, function()
+        if ReadOnly() then return end
         for _, e in ipairs(W.shown or {}) do T.SetPursued(e.key, false) end
         UI.Refresh()
     end)
     none:SetPoint("LEFT", all, "RIGHT", 6, 0)
     local tick = Btn(W, "Tick all shown", 110, function()
+        if ReadOnly() then return end
         for _, e in ipairs(W.shown or {}) do if T.State(e.key) < 2 then T.SetState(e.key, 2, "manual") end end
         UI.Refresh()
     end)
@@ -658,7 +701,7 @@ local function BuildWindow()
         r.box.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check") r.box.check:SetAllPoints()
         r.go = Btn(r, "Go", 34, function() if r.entry then UI.GoTo(r.entry) end end)
         r.go:SetPoint("RIGHT", -16, 0) r.go:SetHeight(18)
-        r.track = Btn(r, "Track", 62, function() if r.entry then T.TogglePursued(r.entry.key) UI.Refresh() end end)
+        r.track = Btn(r, "Track", 62, function() if r.entry and not ReadOnly() then T.TogglePursued(r.entry.key) UI.Refresh() end end)
         r.track:SetPoint("RIGHT", r.go, "LEFT", -4, 0) r.track:SetHeight(18)
         r.track.label = r.track.GetFontString and r.track:GetFontString() or r.track
         r.name = r:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -671,7 +714,7 @@ local function BuildWindow()
         if r.sub.SetWordWrap then r.sub:SetWordWrap(false) end
         r.sub:SetTextColor(0.65, 0.65, 0.7)
         r.box:SetScript("OnClick", function()
-            if not r.entry then return end
+            if not r.entry or ReadOnly() then return end
             local k = r.entry.key
             if r.entry.cat == "bag" then T.CycleState(k)   -- chain steps: not started, accepted, done
             else T.SetState(k, T.State(k) >= 2 and 0 or 2, "manual") end
