@@ -542,7 +542,7 @@ local function RefreshBody()
         W.scroll:SetShown(maxOff > 0)
         W.syncing = false
         if #list == 0 then
-            W.empty:SetText(db.cat == "pursuing" and "You are not tracking anything yet.\nPick something in 'Show' above, then press its Track button." or "Nothing to show with these filters.\nTry turning off 'Hide finished' or 'This zone only'.")
+            W.empty:SetText(db.cat == "pursuing" and "You are not tracking anything yet.\nPick something in 'Show' above, then press its Track button." or ((db.factionFilter ~= "all" and db.cat ~= "custom" and T.Counts(db.cat ~= "all" and db.cat or nil) == 0) and "Nothing here for your faction.\nOptions > 'Show things for' > 'Both factions' shows the other side's entries." or "Nothing to show with these filters.\nTry turning off 'Hide finished' or 'This zone only'."))
             W.empty:Show()
         else
             W.empty:Hide()
