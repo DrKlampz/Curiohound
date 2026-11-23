@@ -29,6 +29,7 @@ ns.CATS = {
     { id = "secret", name = "Secrets and extras" },
     { id = "bagq",   name = "Bags and storage" },
     { id = "perk",   name = "Gear and perks" },
+    { id = "toy",    name = "Toys and disguises" },
     { id = "custom", name = "My own list" },
 }
 
@@ -262,6 +263,28 @@ BagQ(nil, "Darkmoon Storage Box", 14, nil, nil, 30, "Bought at the Darkmoon Fair
 BagQ("riverglades", "Matriarch Quiver", 14, "A Hunter's Quiver", nil, 40, "A quiver, so it is for hunters.", nil, nil, { class = "HUNTER", npc = 2850 })
 BagQ(nil, "Onyxia Hide Backpack", 18, nil, nil, 60, "Drops from Onyxia.")
 BagQ(nil, "Wayfarer's Knapsack", 16, nil, nil, 55, "Drops from Ribbly Screwspigot in Blackrock Depths. Unique.")
+
+---------------------------------------------------------------------------
+-- Toys and disguises: Toy Box items and transformations, with the chain that earns each one
+---------------------------------------------------------------------------
+-- Replica Dartol's Rod of Transformation (Alliance, Ashenvale). Older guides said to abandon the chain to keep the Furbolg
+-- disguise; Forever now gives the replica toy as a final reward. Spots are from player guides (some from Classic data).
+local ROD = "Replica Dartol's Rod of Transformation"
+local function RodStep(n, place, x, y, name, hint, extra)
+    local t = { cat = "toy", zone = "ashenvale", x = x, y = y, lvl = 18, fac = "A", name = "Dartol's Rod " .. n .. ": " .. name,
+        place = place, note = hint, key = "toy:rod:" .. n, quest = "Raene's Cleansing" }
+    if extra then for k, v in pairs(extra) do t[k] = v end end
+    add(t)
+end
+RodStep(1, "Astranaar, Raene Wolfrunner", 36.6, 49.6, "Start with Raene", "Level 18 and up. Raene's Cleansing is an eleven-part chain. Several parts share the same quest name, so check the objective.")
+RodStep(2, "Lake Falathim, Teronis' Corpse", 20.3, 42.3, "Teronis' Corpse", "Search the corpse for a Glowing Gem. It is a random drop, so it can take a few tries.")
+RodStep(3, "Moonwell east of Iris Lake, Shael'dryn", 53.5, 46.2, "Shael'dryn", "Give her the Glowing Gem.")
+RodStep(4, "Worn Chest near the Felwood border", 54.4, 35.4, "The Iron Shaft", "Treants drop the Wooden Key that opens the Worn Chest. Inside is the Iron Shaft.")
+RodStep(5, "Rusty Chest, appears after Rotting Slimes die", 70.0, 75.0, "The Iron Pommel", "Kill the Rotting Slimes in the area; a Rusty Chest appears. Inside is the Iron Pommel.")
+RodStep(6, "Hidden shrine in the mountains", 56.4, 49.2, "The hidden shrine", "Enchant the rebuilt rod at the shrine, then interact with it again to get the next quest.")
+RodStep(7, "Mystral Lake, Krolg", 50.8, 75.1, "Krolg", "Take the temporary rod back to Raene, then use it to speak with Krolg near Mystral Lake.")
+RodStep(8, "Bloodtooth camp", 54.7, 79.6, "Ran Bloodtooth", "Kill four Bloodtooth Guards and Ran Bloodtooth (a tough elite) and loot his skull.")
+RodStep(9, "Astranaar, Raene Wolfrunner", 36.6, 49.6, "Hand in", "Bring the skull and the quest rod back to Raene. The reward is the " .. ROD .. " (turns you into a Furbolg for 3 minutes, 1 minute cooldown), as well as the usual rewards.", { item = ROD })
 
 ---------------------------------------------------------------------------
 -- Gear and perks: secrets and rewards that help you play (many are tied to a class)

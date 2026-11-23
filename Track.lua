@@ -180,7 +180,7 @@ function T.CycleState(key)
     local nxt = s + 1
     if nxt > 2 then nxt = 0 end
     -- things with no "have" stage go straight to done
-    if e and (e.cat == "pet" or e.cat == "secret" or e.cat == "custom" or e.cat == "perk") and nxt == 1 then nxt = 2 end
+    if e and (e.cat == "pet" or e.cat == "secret" or e.cat == "custom" or e.cat == "perk" or e.cat == "toy") and nxt == 1 then nxt = 2 end
     T.SetState(key, nxt, "manual")
 end
 
@@ -688,7 +688,7 @@ end
 
 local function QuestStarted(title)
     for _, e in ipairs(questIndex[qkey(title)] or {}) do
-        if e.cat == "bag" or e.cat == "secret" or e.cat == "bagq" or e.cat == "perk" then T.Raise(e.key, 1, "quest") end
+        if e.cat == "bag" or e.cat == "secret" or e.cat == "bagq" or e.cat == "perk" or e.cat == "toy" then T.Raise(e.key, 1, "quest") end
     end
 end
 local function QuestDone(title)

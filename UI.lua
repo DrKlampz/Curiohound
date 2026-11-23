@@ -15,6 +15,7 @@ local CATS = {
     { id = "secret", name = "Secrets and extras" },
     { id = "bagq", name = "Bags and storage" },
     { id = "perk", name = "Gear and perks" },
+    { id = "toy", name = "Toys and disguises" },
     { id = "custom", name = "My own list" },
 }
 UI.CATS = CATS
@@ -113,6 +114,10 @@ local function BarsFor(pursuedOnly)
     if Any("perk") then
         local total, _, done = T.Counts("perk")
         out[#out + 1] = { label = "Gear and perks", done = done, have = 0, total = total, goal = total }
+    end
+    if Any("toy") then
+        local total, _, done = T.Counts("toy")
+        out[#out + 1] = { label = "Toys and disguises", done = done, have = 0, total = total, goal = total }
     end
     return out
 end
@@ -261,8 +266,8 @@ local function MakeDropdown(label, y, getChoices, onPick, width)
     return { SetText = function(_, s) btn:SetText(s) end }
 end
 
-local CAT_WORD = { book = "Library book", bag = "Cozy Sleeping Bag step", pet = "Companion pet", secret = "Secret or extra", bagq = "Bag or storage", perk = "Gear or perk", custom = "My own list" }
-local CAT_COLOR = { book = "ffd9a441", bag = "ff9fd35c", pet = "ffff9ecb", secret = "ffb48cff", bagq = "ff7fc4ff", perk = "ffffd100", custom = "ffcccccc" }
+local CAT_WORD = { book = "Library book", bag = "Cozy Sleeping Bag step", pet = "Companion pet", secret = "Secret or extra", bagq = "Bag or storage", perk = "Gear or perk", toy = "Toy or disguise step", custom = "My own list" }
+local CAT_COLOR = { book = "ffd9a441", bag = "ff9fd35c", pet = "ffff9ecb", secret = "ffb48cff", bagq = "ff7fc4ff", perk = "ffffd100", toy = "ff5fd7c8", custom = "ffcccccc" }
 local STATE_HEX = { [0] = "ff9a9a9a", [1] = "ffffd100", [2] = "ff55e070" }
 local CLASS_WORD = { HUNTER = "Hunter", ROGUE = "Rogue", WARRIOR = "Warrior", SHAMAN = "Shaman", PALADIN = "Paladin", MAGE = "Mage", WARLOCK = "Warlock", DRUID = "Druid", PRIEST = "Priest" }
 
@@ -457,7 +462,7 @@ local function RefreshBody()
         for _, s in ipairs(SORTS) do if s[1] == db.sort then W.sort:SetText(s[2]) end end
         local bars = BarsFor(false)
         local primary
-        if db.cat == "book" then primary = "Library" elseif db.cat == "bag" then primary = "Sleeping Bag" elseif db.cat == "pet" then primary = "Pets" elseif db.cat == "secret" then primary = "Secrets" elseif db.cat == "bagq" then primary = "Bags" elseif db.cat == "perk" then primary = "Gear" end
+        if db.cat == "book" then primary = "Library" elseif db.cat == "bag" then primary = "Sleeping Bag" elseif db.cat == "pet" then primary = "Pets" elseif db.cat == "secret" then primary = "Secrets" elseif db.cat == "bagq" then primary = "Bags" elseif db.cat == "perk" then primary = "Gear" elseif db.cat == "toy" then primary = "Toys" end
         local bar
         if db.cat == "all" or db.cat == "pursuing" then
             local tt, th, td = T.Counts(nil)
@@ -1036,6 +1041,8 @@ local function Progress()
     lines[#lines + 1] = ("Bags: %d of %d"):format(qd, qt)
     local gt, _, gd = T.Counts("perk")
     lines[#lines + 1] = ("Gear and perks: %d of %d"):format(gd, gt)
+    local tt, _, td = T.Counts("toy")
+    lines[#lines + 1] = ("Toys and disguises: %d of %d"):format(td, tt)
     return lines
 end
 
@@ -1173,7 +1180,7 @@ SlashCmdList["CURIOHOUND"] = function(msg)
         ns.Print("stopped tracking everything.")
     elseif cmd == "pursue" then
         local want = rest:lower()
-        local map = { book = "book", books = "book", bag = "bag", sleeping = "bag", pet = "pet", pets = "pet", secret = "secret", secrets = "secret", bags = "bagq", storage = "bagq", gear = "perk", perks = "perk" }
+        local map = { book = "book", books = "book", bag = "bag", sleeping = "bag", pet = "pet", pets = "pet", secret = "secret", secrets = "secret", bags = "bagq", storage = "bagq", gear = "perk", perks = "perk", toys = "toy", toy = "toy", disguises = "toy" }
         local cat = map[want]
         if want ~= "all" and not cat then Help() return end
         local n = 0
