@@ -4,7 +4,7 @@
 -- Read it with /issues, or Ctrl+click an add-on's minimap button. Nothing is sent anywhere.
 local ADDON, NS = ...
 local VERSION = 3
-local DB_GLOBAL = "CuriohoundDB"        -- the add-on's SavedVariables table; the log lives inside it
+local DB_GLOBAL = "WhatnotDB"        -- the add-on's SavedVariables table; the log lives inside it
 local MAX_ENTRIES = 60
 local MAX_LEN = 500
 
@@ -342,7 +342,7 @@ D.tests[ADDON] = {}
 local function T(name, fn) table.insert(D.tests[ADDON], { name = name, fn = fn }) end
 local function Age(t) if not t or t == 0 then return "never" end return math.floor((time() - t) / 60) .. " min ago" end
 
-local SLASHKEY = { Curiohound = "CURIOHOUND" }
+local SLASHKEY = { Whatnot = "WHATNOT" }
 
 T("saved data is loaded", function() return type(_G[DB_GLOBAL]) == "table" end)
 T("version is set", function() return (version ~= nil and version ~= ""), tostring(version) end)
@@ -367,7 +367,7 @@ T("no blocked actions logged", function()
 end)
 
 local S = {}
-S.Curiohound = function()
+S.Whatnot = function()
     T("settings are ready", function() return type(NS.db) == "table" end)
 end
 if S[ADDON] then S[ADDON]() end

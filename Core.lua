@@ -1,10 +1,10 @@
--- Curiohound: tracks the things worth collecting (library books, the Cozy Sleeping Bag, pets, secrets) and
+-- Whatnot: tracks the things worth collecting (library books, the Cozy Sleeping Bag, pets, secrets) and
 -- points you at the ones you choose to chase. Core.lua = saved settings and helpers. Data.lua = the list,
 -- Track.lua = what you have and what to do next, Pins.lua = map and minimap pins, UI.lua = what you see.
 local ADDON_NAME, ns = ...
 ns.name = ADDON_NAME
 function ns.IsSecret(v) return issecretvalue ~= nil and issecretvalue(v) end
-function ns.Print(msg) print("|cff66ddffCuriohound:|r " .. tostring(msg)) end
+function ns.Print(msg) print("|cff66ddffWhatnot:|r " .. tostring(msg)) end
 ns.ICON = "Interface\\Icons\\INV_Misc_Book_09"
 
 ns.DEFAULTS = {
@@ -88,11 +88,11 @@ f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function(_, event, arg)
     if event == "ADDON_LOADED" and arg == ADDON_NAME then
-        CuriohoundDB = CuriohoundDB or {}
-        ns.db = Merge(CuriohoundDB, ns.DEFAULTS)
+        WhatnotDB = WhatnotDB or {}
+        ns.db = Merge(WhatnotDB, ns.DEFAULTS)
     elseif event == "PLAYER_LOGIN" then
         ns.Fire("login")
     end
 end)
 
-function Curiohound_OnAddonCompartmentClick() if ns.UI then ns.UI.Toggle() end end
+function Whatnot_OnAddonCompartmentClick() if ns.UI then ns.UI.Toggle() end end

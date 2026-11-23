@@ -1,5 +1,5 @@
 local ADDON_NAME, ns = ...
--- Customization (see Look.lua). Opens from the minimap button (Alt-click) or /curiohound options.
+-- Customization (see Look.lua). Opens from the minimap button (Alt-click) or /whatnot options.
 if not ns.WinLook then return end
 
 local function Options()
@@ -68,13 +68,13 @@ end
 
 ns.WinLook.Setup({
     options = Options,
-    title = "Curiohound",
-    slash = "curiohoundlook",
+    title = "Whatnot",
+    slash = "whatnotlook",
     syncDefault = false,
-    media = "Interface\\AddOns\\Curiohound\\Media\\",
-    db = function() return CuriohoundDB end,
+    media = "Interface\\AddOns\\Whatnot\\Media\\",
+    db = function() return WhatnotDB end,
     windows = {
-        { id = "main", name = "List window", global = "CuriohoundFrame", strip = "backdrop", defaultOn = true, title = function(f) return f.titleFS end },
-        { id = "tracker", name = "Tracker", global = "CuriohoundTracker", strip = "backdrop", defaultOn = true, title = function(f) return f.titleFS end },
+        { id = "main", name = "List window", global = "WhatnotFrame", strip = "backdrop", defaultOn = true, title = function(f) return f.titleFS end },
+        { id = "tracker", name = "Tracker", global = "WhatnotTracker", strip = "backdrop", defaultOn = true, title = function(f) return f.titleFS end },
     },
 })

@@ -1,5 +1,5 @@
 ## Interface: 16001
-## Title: |cff66ddffCuriohound|r
+## Title: |cff66ddffWhatnot|r
 ## Notes: Tracks the things worth collecting: library books, the Cozy Sleeping Bag, early big bags, perks, companion pets and secrets. Detects what you have finished, tracks every step, and guides you with an on-screen tracker, travel hints (zeppelins, flight masters), and pins on the world map and minimap.
 ## Author: David
 ## Version: @project-version@
@@ -7,9 +7,9 @@
 ## X-License: MIT
 ## X-Curse-Project-ID: 1815676
 ## X-Wago-ID: QNl493Ne
-## IconTexture: Interface\AddOns\Curiohound\Media\Icon
-## AddonCompartmentFunc: Curiohound_OnAddonCompartmentClick
-## SavedVariables: CuriohoundDB
+## IconTexture: Interface\AddOns\Whatnot\Media\Icon
+## AddonCompartmentFunc: Whatnot_OnAddonCompartmentClick
+## SavedVariables: WhatnotDB
 
 Core.lua
 IssueLog.lua

@@ -128,7 +128,7 @@ end
 local function EditOf(popup) return popup.editBox or popup.EditBox or (popup.GetName and _G[popup:GetName() .. "EditBox"]) end
 local function Ask(which, text, data) if StaticPopup_Show then StaticPopup_Show(which, text, nil, data) end end
 
-StaticPopupDialogs["CURIOHOUND_ADD"] = {
+StaticPopupDialogs["WHATNOT_ADD"] = {
     text = "%s", button1 = ACCEPT or "OK", button2 = CANCEL or "Cancel", hasEditBox = 1, maxLetters = 80, editBoxWidth = 280,
     timeout = 0, whileDead = 1, hideOnEscape = 1,
     OnShow = function(self) local eb = EditOf(self) if eb then eb:SetText("") eb:SetFocus() end end,
@@ -140,7 +140,7 @@ StaticPopupDialogs["CURIOHOUND_ADD"] = {
     end,
     EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
 }
-StaticPopupDialogs["CURIOHOUND_DELETE"] = {
+StaticPopupDialogs["WHATNOT_DELETE"] = {
     text = "%s", button1 = YES or "Yes", button2 = NO or "No", timeout = 0, whileDead = 1, hideOnEscape = 1,
     OnAccept = function(self, data) if data and data.fn then data.fn() end end,
 }
@@ -158,10 +158,10 @@ function UI.AddCustom(name)
     UI.Refresh()
 end
 
-function UI.AskAdd() Ask("CURIOHOUND_ADD", "What do you want to collect? (it goes on your own list)", { fn = UI.AddCustom }) end
+function UI.AskAdd() Ask("WHATNOT_ADD", "What do you want to collect? (it goes on your own list)", { fn = UI.AddCustom }) end
 
 function UI.AskDelete(e)
-    Ask("CURIOHOUND_DELETE", ("Remove \"%s\" from your own list?"):format(e.name), { fn = function()
+    Ask("WHATNOT_DELETE", ("Remove \"%s\" from your own list?"):format(e.name), { fn = function()
         for i, c in ipairs(ns.db.custom) do if c.key == e.key then table.remove(ns.db.custom, i) break end end
         for _, ch in pairs(ns.db.chars) do if ch.s then ch.s[e.key] = nil end if ch.p then ch.p[e.key] = nil end end
         T.Rebuild()
@@ -275,7 +275,7 @@ local CLASS_WORD = { HUNTER = "Hunter", ROGUE = "Rogue", WARRIOR = "Warrior", SH
 local PV
 local function Preview()
     if PV then return PV end
-    PV = CreateFrame("Frame", "CuriohoundPreview", UIParent, "BackdropTemplate")
+    PV = CreateFrame("Frame", "WhatnotPreview", UIParent, "BackdropTemplate")
     PV:SetSize(190, 230)
     PV:SetFrameStrata("TOOLTIP")
     PV:SetClampedToScreen(true)
@@ -632,7 +632,7 @@ local function ReadOnly()
 end
 
 local function BuildWindow()
-    W = CreateFrame("Frame", "CuriohoundFrame", UIParent, "BackdropTemplate")
+    W = CreateFrame("Frame", "WhatnotFrame", UIParent, "BackdropTemplate")
     W:SetSize(520, 480)
     W:SetFrameStrata("DIALOG")
     W:SetToplevel(true)
@@ -654,11 +654,11 @@ local function BuildWindow()
         ns.db.pos = { a, b, x, y }
     end)
     W:Hide()
-    tinsert(UISpecialFrames, "CuriohoundFrame")
+    tinsert(UISpecialFrames, "WhatnotFrame")
 
     W.titleFS = W:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     W.titleFS:SetPoint("TOPLEFT", 12, -10)
-    W.titleFS:SetText("Curiohound")
+    W.titleFS:SetText("Whatnot")
     local close = CreateFrame("Button", nil, W, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", 2, 2)
 
@@ -874,7 +874,7 @@ local TROWH = 84
 local TMAX = 10
 
 local function BuildTracker()
-    TR = CreateFrame("Frame", "CuriohoundTracker", UIParent, "BackdropTemplate")
+    TR = CreateFrame("Frame", "WhatnotTracker", UIParent, "BackdropTemplate")
     TR:SetSize(310, 120)
     TR:SetFrameStrata("HIGH")
     TR:SetClampedToScreen(true)
@@ -896,7 +896,7 @@ local function BuildTracker()
     end)
     TR.titleFS = TR:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     TR.titleFS:SetPoint("TOPLEFT", 8, -6)
-    TR.titleFS:SetText("Curiohound")
+    TR.titleFS:SetText("Whatnot")
     TR.count = TR:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     TR.count:SetPoint("TOPRIGHT", -8, -8)
     TR.rows = {}
@@ -1109,7 +1109,7 @@ end
 
 local function BuildMini()
     if not Minimap then return end
-    mini = CreateFrame("Button", "CuriohoundMinimapButton", Minimap)
+    mini = CreateFrame("Button", "WhatnotMinimapButton", Minimap)
     mini:SetSize(31, 31)
     mini:SetFrameStrata("MEDIUM")
     mini:SetFrameLevel(8)
@@ -1118,12 +1118,12 @@ local function BuildMini()
     mini:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     local icon = mini:CreateTexture(nil, "BACKGROUND")
     icon:SetSize(20, 20) icon:SetPoint("CENTER", 0, 1)
-    icon:SetTexture("Interface\\AddOns\\Curiohound\\Media\\Icon") icon:SetTexCoord(0.02, 0.98, 0.02, 0.98)
+    icon:SetTexture("Interface\\AddOns\\Whatnot\\Media\\Icon") icon:SetTexCoord(0.02, 0.98, 0.02, 0.98)
     local border = mini:CreateTexture(nil, "OVERLAY")
     border:SetSize(53, 53) border:SetPoint("TOPLEFT")
     border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     mini:SetScript("OnClick", function(_, btn)
-        if IsControlKeyDown() and _G.DavidIssues then _G.DavidIssues.Toggle("Curiohound")
+        if IsControlKeyDown() and _G.DavidIssues then _G.DavidIssues.Toggle("Whatnot")
         elseif IsAltKeyDown() then UI.OpenOptions()
         elseif btn == "RightButton" then ns.db.tracker = not ns.db.tracker UI.RefreshTracker()
             ns.Print("tracker " .. (ns.db.tracker and "shown" or "hidden") .. ".")
@@ -1142,7 +1142,7 @@ local function BuildMini()
     mini:SetScript("OnDragStop", function(self) self:SetScript("OnUpdate", nil) end)
     mini:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText("Curiohound", 0.4, 0.87, 1)
+        GameTooltip:SetText("Whatnot", 0.4, 0.87, 1)
         for _, l in ipairs(Progress()) do GameTooltip:AddLine(l, 1, 1, 1) end
         local a = P.live.active
         if a then GameTooltip:AddLine("Chasing: " .. a.name, 1, 0.82, 0) end
@@ -1173,7 +1173,7 @@ end)
 -- Slash command
 ---------------------------------------------------------------------------
 local function Help()
-    ns.Print("/curiohound  (or /ch) opens the list; Alt-click the minimap button for the options.")
+    ns.Print("/whatnot  (or /wn) opens the list; Alt-click the minimap button for the options.")
     ns.Print("/ch pursue books | bag | pets | secrets | all   tracks a whole group; /ch stop  clears all.")
     ns.Print("/ch go  points the waypoint at the active target; /ch next  says what to do next.")
     ns.Print("/ch verify  checks every map and coordinate against your game client.")
@@ -1182,9 +1182,10 @@ local function Help()
     ns.Print("/ch add <name>  adds something of your own; /ch tracker  shows or hides the tracker; /ch status  shows progress.")
 end
 
-SLASH_CURIOHOUND1 = "/curiohound"
-SLASH_CURIOHOUND2 = "/ch"
-SlashCmdList["CURIOHOUND"] = function(msg)
+SLASH_WHATNOT1 = "/whatnot"
+SLASH_WHATNOT2 = "/wn"
+SLASH_WHATNOT3 = "/ch"
+SlashCmdList["WHATNOT"] = function(msg)
     local cmd, rest = (msg or ""):match("^(%S*)%s*(.-)%s*$")
     cmd = cmd:lower()
     if cmd == "" then UI.Toggle()

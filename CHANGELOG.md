@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.0
+
+- Curiohound is now **Whatnot**. Same add-on, new name: the folder is Whatnot, the commands are /whatnot and /wn (/ch still works), and your list, ticks and settings are kept in a new saved file called Whatnot. To keep progress from Curiohound, copy `Curiohound.lua` to `Whatnot.lua` in WTF\Account\(your account)\SavedVariables and change the first word inside the file from CuriohoundDB to WhatnotDB, then delete the old Curiohound folder
+- New Oddities category with the Replica Dartol's Rod of Transformation chain (Alliance, Ashenvale)
+- Gear and perks is grouped under headers: General, Fishing, Mounts, Legacy rewards, All classes, then each class
+- An empty list now tells you when the faction filter is the reason
+
 ## v0.3.9
 
 - Fixed an error in Shadowfang Keep: the game can return a list of finished quests it will not let an add-on walk through, and the librarian check now copes with that

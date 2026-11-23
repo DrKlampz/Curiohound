@@ -1,8 +1,8 @@
-# Curiohound
+# Whatnot
 
-<img src="docs/logo.png" alt="Curiohound icon" width="96" align="right">
+<img src="docs/logo.png" alt="Whatnot icon" width="96" align="right">
 
-**A collector's guide for WoW Forever.** Curiohound keeps a list of everything worth collecting, works out what you have already done, and walks you to the next step.
+**A collector's guide for WoW Forever.** Whatnot keeps a list of everything worth collecting, works out what you have already done, and walks you to the next step.
 
 Open it from the minimap button or `/ch`. Alt-click the minimap button for every option.
 

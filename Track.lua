@@ -89,7 +89,7 @@ local function FullName()
     end
     return name
 end
-function T.Me() local n = FullName() return n .. "-" .. RealmFallback(_G.CuriohoundDB, n) end
+function T.Me() local n = FullName() return n .. "-" .. RealmFallback(_G.WhatnotDB, n) end
 -- Horde or Alliance, found from the character itself (faction group first, then race)
 local HORDE_RACES = { Orc = true, Tauren = true, Troll = true, Scourge = true, Undead = true, BloodElf = true, Goblin = true }
 local ALLIANCE_RACES = { Human = true, Dwarf = true, NightElf = true, Gnome = true, Draenei = true, Worgen = true }
@@ -554,7 +554,7 @@ function T.SetWaypoint(e, quiet)
         end
     end
     if (mode == "tomtom" or mode == "both") and TomTom and TomTom.AddWaypoint then
-        pcall(TomTom.AddWaypoint, TomTom, t.map, t.x / 100, t.y / 100, { title = e.name, from = "Curiohound", persistent = false, minimap = true, world = true })
+        pcall(TomTom.AddWaypoint, TomTom, t.map, t.x / 100, t.y / 100, { title = e.name, from = "Whatnot", persistent = false, minimap = true, world = true })
     end
     if not quiet then ns.Print(("waypoint set: %s, %s"):format(e.name, Where({ zoneName = t.zone, x = t.x, y = t.y }))) end
     return true

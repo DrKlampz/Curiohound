@@ -1,4 +1,4 @@
--- Curiohound: the list of things to collect. Coordinates and details come from community guides
+-- Whatnot: the list of things to collect. Coordinates and details come from community guides
 -- (Warcraft Tavern, LFCarry, wowclassicforever.info, Icy Veins) and can be a little off. Anything can be ticked by hand.
 local ADDON_NAME, ns = ...
 
