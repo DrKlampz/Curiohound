@@ -29,7 +29,7 @@ ns.CATS = {
     { id = "secret", name = "Secrets and extras" },
     { id = "bagq",   name = "Bags and storage" },
     { id = "perk",   name = "Gear and perks" },
-    { id = "toy",    name = "Masquerade" },
+    { id = "toy",    name = "Novelties" },
     { id = "custom", name = "My own list" },
 }
 
