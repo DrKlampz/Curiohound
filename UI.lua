@@ -346,6 +346,44 @@ local function Section(G, label)
     G:AddLine(label, 0.5, 0.75, 1)
 end
 
+
+-- "Gear and perks" in guide order is grouped under little headers: general, fishing, mounts, Legacy rewards, then by class
+local PERK_CLASSES = { "Druid", "Hunter", "Mage", "Paladin", "Priest", "Rogue", "Shaman", "Warlock", "Warrior" }
+local PERK_ORDER = { "General", "Fishing", "Mounts", "Legacy rewards", "All classes" }
+for _, c in ipairs(PERK_CLASSES) do PERK_ORDER[#PERK_ORDER + 1] = c end
+local PERK_RANK = {}
+for i, g in ipairs(PERK_ORDER) do PERK_RANK[g] = i end
+local function PerkGroup(e)
+    local n = e.name or ""
+    local l = n:lower()
+    if l:find("legacy reward", 1, true) then return "Legacy rewards" end
+    if l:find("fishing", 1, true) or l:find("angler", 1, true) or l:find("lure", 1, true) or l:find("pagle", 1, true) or l:find("trunk", 1, true) then return "Fishing" end
+    if l:find("mount", 1, true) or l:find("riding", 1, true) or l:find("warhorse", 1, true) or l:find("charger", 1, true) or l:find("stallion", 1, true) then return "Mounts" end
+    if l:find("class quest", 1, true) then return "All classes" end
+    if type(e.class) == "string" then
+        local c = e.class:sub(1, 1):upper() .. e.class:sub(2):lower()
+        if PERK_RANK[c] then return c end
+    end
+    for _, c in ipairs(PERK_CLASSES) do if n:find(c, 1, true) then return c end end
+    return "General"
+end
+-- the list plus a header line before each group; only headers and rows, in guide order
+local function WithHeaders(list)
+    local groups, order = {}, {}
+    for i, e in ipairs(list) do
+        local g = PerkGroup(e)
+        if not groups[g] then groups[g] = {} order[#order + 1] = g end
+        table.insert(groups[g], e)
+    end
+    table.sort(order, function(a, b) return PERK_RANK[a] < PERK_RANK[b] end)
+    local out = {}
+    for _, g in ipairs(order) do
+        out[#out + 1] = { header = g, count = #groups[g] }
+        for _, e in ipairs(groups[g]) do out[#out + 1] = e end
+    end
+    return out
+end
+
 local function RowTooltipBody(row)
     local e = row.entry
     if not e then return end
@@ -498,14 +536,36 @@ local function RefreshBody()
         local tracking = 0
         for _, e in ipairs(list) do if T.Pursued(e.key) then tracking = tracking + 1 end end
         W.count:SetText(("%d shown, %d tracked"):format(#list, tracking))
+        local display = list
+        if db.cat == "perk" and (db.sort or "list") == "list" and #list > 0 then display = WithHeaders(list) end
         local nrows = math.min(MAXROWS, math.max(5, math.floor(db.listRows or 12)))
-        local maxOff = math.max(0, #list - nrows)
+        local maxOff = math.max(0, #display - nrows)
         W.offset = math.min(math.max(W.offset or 0, 0), maxOff)
         local pm, px, py = T.PlayerPos()
         for i = 1, MAXROWS do
             local r = W.rows[i]
-            local e = i <= nrows and list[W.offset + i] or nil
-            if e then
+            local e = i <= nrows and display[W.offset + i] or nil
+            if e and e.header then
+                -- a divider with a header: no tick box or buttons, just the group name and a line under it
+                r.entry = nil
+                r.box:Hide() r.go:Hide() r.track:Hide() r.have:SetText("") r.sub:SetText("")
+                if not r.div then
+                    r.div = r:CreateTexture(nil, "ARTWORK")
+                    r.div:SetHeight(1)
+                    r.div:SetPoint("BOTTOMLEFT", r, "BOTTOMLEFT", 14, 2)
+                    r.div:SetPoint("BOTTOMRIGHT", r, "BOTTOMRIGHT", -16, 2)
+                    r.div:SetColorTexture(1, 0.82, 0, 0.45)
+                end
+                r.div:Show()
+                r.name:ClearAllPoints()
+                r.name:SetPoint("LEFT", r, "LEFT", 14, 2)
+                r.name:SetText(("|cffffd100%s|r  |cff888888(%d)|r"):format(e.header, e.count or 0))
+                r:Show()
+            elseif e then
+                r.box:Show() r.go:Show() r.track:Show()
+                if r.div then r.div:Hide() end
+                r.name:ClearAllPoints()
+                r.name:SetPoint("TOPLEFT", r, "TOPLEFT", 56, -4)
                 r.entry = e
                 local st = T.State(e.key)
                 local c = STATE_COLOR[st]
@@ -533,6 +593,7 @@ local function RefreshBody()
                 r:Show()
             else
                 r.entry = nil
+                if r.div then r.div:Hide() end
                 r:Hide()
             end
         end
@@ -746,7 +807,7 @@ local function BuildWindow()
             GameTooltip:Show()
         end)
         r.go:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        r:SetScript("OnEnter", function(self) self.hl:Show() RowTooltip(self) end)
+        r:SetScript("OnEnter", function(self) if not self.entry then return end self.hl:Show() RowTooltip(self) end)
         r:SetScript("OnLeave", function(self) self.hl:Hide() GameTooltip:Hide() UI.HidePreview() end)
         r:SetScript("OnClick", function(self, btn)
             local e = self.entry
