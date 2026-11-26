@@ -146,6 +146,17 @@ function T.State(key)
     return mine
 end
 
+-- which of your characters have finished this (state 2), as short names, you first
+function T.DoneBy(key)
+    local out, me = {}, T.Me()
+    if not (ns.db and ns.db.chars) then return out end
+    local keys = {}
+    for k, c in pairs(ns.db.chars) do if c.s and (c.s[key] or 0) >= 2 then keys[#keys + 1] = k end end
+    table.sort(keys, function(a, b) if a == me then return true elseif b == me then return false end return a:lower() < b:lower() end)
+    for _, k in ipairs(keys) do out[#out + 1] = (k:gsub("%-.*$", "")) end
+    return out
+end
+
 -- finishing a step of the sleeping-bag chain finishes the ones before it
 local function ChainBefore(key)
     local n = key:match("^bag:(%d+)$")
@@ -206,7 +217,10 @@ end
 T.ClassToken = ClassToken
 local function FactionOK(e)
     if ns.db.factionFilter == "all" then return true end
-    if e.class and e.class ~= ClassToken() then return false end
+    -- looking at one class's section of Gear and perks shows that class even when you are not it
+    local browsing = ns.db.cat == "perk" and ns.db.perkGroup
+    -- Gear and perks always lists every class's entries (the sections divide them)
+    if e.class and not browsing and e.cat ~= "perk" and e.class ~= ClassToken() then return false end
     return e.fac == nil or e.fac == T.Faction()
 end
 T.FactionOK = FactionOK
@@ -475,6 +489,11 @@ function T.List()
         local d = {}
         for _, e in ipairs(out) do d[e] = T.Distance(e, pm, px, py) or 1e9 end
         table.sort(out, function(a, b) if d[a] ~= d[b] then return d[a] < d[b] end return idx[a] < idx[b] end)
+    end
+    if cat == "perk" and db.perkGroup and ns.PerkGroup then
+        local f = {}
+        for _, e in ipairs(out) do if ns.PerkGroup(e) == db.perkGroup then f[#f + 1] = e end end
+        out = f
     end
     return out
 end

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.1
+
+- Gear and perks can now be split by section: the Show menu lists General, Fishing, Mounts, Legacy rewards, All classes and each class under it, and picking one shows only that section. Gear and perks always lists every class (it no longer hides other classes), and each entry shows which of your characters have finished it, in the row and the tooltip
+- Fixed the top right of the window: the faction note no longer sits on top of the character picker, it is next to the title now
+
 ## v0.4.0
 
 - Curiohound is now **Whatnot**. Same add-on, new name: the folder is Whatnot, the commands are /whatnot and /wn (/ch still works), and your list, ticks and settings are kept in a new saved file called Whatnot. To keep progress from Curiohound, copy `Curiohound.lua` to `Whatnot.lua` in WTF\Account\(your account)\SavedVariables and change the first word inside the file from CuriohoundDB to WhatnotDB, then delete the old Curiohound folder

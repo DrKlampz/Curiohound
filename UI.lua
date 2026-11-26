@@ -23,6 +23,7 @@ local SORTS = { { "list", "Guide order" }, { "zone", "This zone first" }, { "lev
 UI.SORTS = SORTS
 
 local function CatName(id)
+    if id == "perk" and ns.db and ns.db.perkGroup then return "Gear and perks: " .. ns.db.perkGroup end
     for _, c in ipairs(CATS) do if c.id == id then return c.name end end
     return id
 end
@@ -384,6 +385,16 @@ local function WithHeaders(list)
     return out
 end
 
+ns.PerkGroup = PerkGroup
+-- the groups that have something in them, in display order
+local function PerkGroupsPresent()
+    local have = {}
+    for _, e in ipairs(T.all) do if e.cat == "perk" then have[PerkGroup(e)] = true end end
+    local out = {}
+    for _, g in ipairs(PERK_ORDER) do if have[g] then out[#out + 1] = g end end
+    return out
+end
+
 local function RowTooltipBody(row)
     local e = row.entry
     if not e then return end
@@ -400,6 +411,10 @@ local function RowTooltipBody(row)
     local chips = "|c" .. (CAT_COLOR[e.cat] or "ffcccccc") .. (CAT_WORD[e.cat] or "Collectible") .. "|r   |c" .. STATE_HEX[st] .. STATE_WORD[st] .. "|r"
     if T.Pursued(e.key) then chips = chips .. "   |cff66ddfftracking|r" end
     G:AddLine(chips)
+    do
+        local by = T.DoneBy(e.key)
+        if #by > 0 then G:AddLine("|cff66dd66Done on:|r " .. table.concat(by, ", "), 1, 1, 1, true) end
+    end
     local need = {}
     if e.class then need[#need + 1] = "|cffffffff" .. (CLASS_WORD[e.class] or e.class) .. " only|r" end
     if e.fac == "A" then need[#need + 1] = "|cff4a9dffAlliance|r" elseif e.fac == "H" then need[#need + 1] = "|cffff5050Horde|r" end
@@ -537,7 +552,7 @@ local function RefreshBody()
         for _, e in ipairs(list) do if T.Pursued(e.key) then tracking = tracking + 1 end end
         W.count:SetText(("%d shown, %d tracked"):format(#list, tracking))
         local display = list
-        if db.cat == "perk" and (db.sort or "list") == "list" and #list > 0 then display = WithHeaders(list) end
+        if db.cat == "perk" and not db.perkGroup and (db.sort or "list") == "list" and #list > 0 then display = WithHeaders(list) end
         local nrows = math.min(MAXROWS, math.max(5, math.floor(db.listRows or 12)))
         local maxOff = math.max(0, #display - nrows)
         W.offset = math.min(math.max(W.offset or 0, 0), maxOff)
@@ -589,6 +604,10 @@ local function RefreshBody()
                 if e.fac and db.factionFilter == "all" then sub[#sub + 1] = e.fac == "A" and "|cff4da6ffAlliance|r" or "|cffff5555Horde|r" end
                 local d = T.Distance(e, pm, px, py)
                 if d then sub[#sub + 1] = Dist(d) end
+                if e.cat == "perk" then
+                    local by = T.DoneBy(e.key)
+                    if #by > 0 then sub[#sub + 1] = "|cff66dd66done: " .. table.concat(by, ", ") .. "|r" end
+                end
                 r.sub:SetText(table.concat(sub, "  "))
                 r:Show()
             else
@@ -680,9 +699,21 @@ local function BuildWindow()
     end, function(id) ns.db.viewChar = (id ~= T.Me()) and id or nil W.offset = 0 UI.Refresh() end, 200)
     W.cat = MakeDropdown("Show", -34, function()
         local out = {}
-        for _, c in ipairs(CATS) do out[#out + 1] = { id = c.id, label = c.name, current = ns.db.cat == c.id } end
+        for _, c in ipairs(CATS) do
+            out[#out + 1] = { id = c.id, label = c.name, current = ns.db.cat == c.id and not (c.id == "perk" and ns.db.perkGroup) }
+            if c.id == "perk" then
+                -- gear and perks split by section: general, fishing, mounts, then each class
+                for _, g in ipairs(PerkGroupsPresent()) do
+                    out[#out + 1] = { id = "perk:" .. g, label = "    " .. g, current = ns.db.cat == "perk" and ns.db.perkGroup == g }
+                end
+            end
+        end
         return out
-    end, function(id) ns.db.cat = id W.offset = 0 UI.Refresh() end)
+    end, function(id)
+        local g = type(id) == "string" and id:match("^perk:(.+)$")
+        if g then ns.db.cat = "perk" ns.db.perkGroup = g else ns.db.cat = id ns.db.perkGroup = nil end
+        W.offset = 0 UI.Refresh()
+    end)
     W.sort = MakeDropdown("Sort", -58, function()
         local out = {}
         for _, s in ipairs(SORTS) do out[#out + 1] = { id = s[1], label = s[2], current = ns.db.sort == s[1] } end
@@ -851,7 +882,7 @@ local function BuildWindow()
     W.status:SetTextColor(0.65, 0.65, 0.7)
     W.status:SetText("Tick the box when finished. Track shows it on your maps. Go points your arrow at it.")
     W.faction = W:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    W.faction:SetPoint("TOPRIGHT", -30, -14)
+    W.faction:SetPoint("LEFT", W.titleFS, "RIGHT", 10, -1)
 
     ApplyLook()
     W:SetScript("OnShow", function() ApplyLook() UI.Refresh() end)
