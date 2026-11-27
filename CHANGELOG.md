@@ -1,8 +1,12 @@
 # Changelog
 
-## v0.4.1
+## v0.4.2
 
 - Fixed: talking to an NPC could throw "attempted to index a table that cannot be indexed with secret keys". When the game hides the NPC's name, Whatnot now treats it as no name instead of using it
+- The issue log now keeps notes (things that are not problems) apart from issues, under a Notes button
+
+## v0.4.1
+
 - Gear and perks can now be split by section: the Show menu lists General, Fishing, Mounts, Legacy rewards, All classes and each class under it, and picking one shows only that section. Gear and perks always lists every class (it no longer hides other classes), and each entry shows which of your characters have finished it, in the row and the tooltip
 - Fixed the top right of the window: the faction note no longer sits on top of the character picker, it is next to the title now
 
