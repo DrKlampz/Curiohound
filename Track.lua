@@ -77,6 +77,13 @@ local function RealmFallback(db, name)
     end
     return ""
 end
+-- the game can hand back a name it will not let us use as a table key or save (a secret value); treat that as no name
+local function NpcName()
+    local n = UnitName("npc") or UnitName("target")
+    if n ~= nil and issecretvalue and issecretvalue(n) then return nil end
+    return n
+end
+
 -- two-part names ("Dr Flamel") come back from UnitName as first name + last name in the realm slot;
 -- without the second part every "Dr ..." character shared one record
 local function FullName()
@@ -689,7 +696,7 @@ function T.CheckBags()
                         local log = ns.db.bagLog or {}
                         ns.db.bagLog = log
                         log[#log + 1] = { book = e.name, atLibrarian = atLib and true or false, afterQuest = justTurned and true or false,
-                            npc = UnitName("npc") or UnitName("target"), when = date and date("%Y-%m-%d %H:%M") or "?" }
+                            npc = NpcName(), when = date and date("%Y-%m-%d %H:%M") or "?" }
                         while #log > 30 do table.remove(log, 1) end
                         if atLib or justTurned then
                             if T.State(e.key) < 2 then T.SetState(e.key, 2, "turnin") end
@@ -947,7 +954,7 @@ function T.ProbeLibrarian(why)
     ns.db.probe = p
     p.when = date and date("%Y-%m-%d %H:%M") or nil
     p.why = why
-    p.npc = UnitName("npc") or UnitName("target")
+    p.npc = NpcName()
     pcall(function()
         if C_GossipInfo then
             p.text = C_GossipInfo.GetText and C_GossipInfo.GetText() or p.text
@@ -989,7 +996,7 @@ ev:SetScript("OnEvent", function(_, event, a1, a2)
         do   -- what was handed in, and to whom (saved data: turnLog)
             local log = ns.db.turnLog or {}
             ns.db.turnLog = log
-            log[#log + 1] = { id = a1, title = title or "?", npc = UnitName("npc") or UnitName("target"), when = date and date("%Y-%m-%d %H:%M") or "?" }
+            log[#log + 1] = { id = a1, title = title or "?", npc = NpcName(), when = date and date("%Y-%m-%d %H:%M") or "?" }
             while #log > 40 do table.remove(log, 1) end
         end
         C_Timer.After(1.5, T.CheckBags)
@@ -1002,7 +1009,7 @@ ev:SetScript("OnEvent", function(_, event, a1, a2)
     elseif event == "COMPANION_LEARNED" or event == "COMPANION_UPDATE" or event == "NEW_PET_ADDED" then
         T.ScanCompanions()
     elseif event == "GOSSIP_SHOW" or event == "QUEST_GREETING" or event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" or event == "QUEST_COMPLETE" then
-        local npc = UnitName("npc") or UnitName("target")
+        local npc = NpcName()
         if npc and ns.LIBRARIANS[npc] then
             libUntil = GetTime() + 25
             if event == "GOSSIP_SHOW" then T.ProbeLibrarian("gossip") T.SnapFinished() end
